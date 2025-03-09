@@ -1,6 +1,6 @@
 name: ophelia-ci-server
 base: core24
-version: '0.1'
+version: 1.0.0
 summary: An open and free CI server.
 description: |
   A CI server that anyone can install in a VM and use to mange 
