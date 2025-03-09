@@ -1,0 +1,46 @@
+syntax = "proto3";
+package ophelia-ci-server;
+
+option go_package = "./ophelia-ci-server";
+
+service RepositoryService {
+    rpc CreateRepository(CreateRepositoryRequest) returns (RepositoryResponse);
+    rpc UpdateRepository(UpdateRepositoryRequest) returns (RepositoryResponse);
+    rpc ListRepository(Empty) returns (ListRepositoryResponse);
+    rpc GetRepository(GetRepositoryRequest) returns (RepositoryResponse);
+    rpc DeleteRepository(DeleteRepositoryRequest) returns (Empty);
+}
+
+message GetRepositoryRequest {
+    string id = 1;
+    string name = 2;
+}
+
+message CreateRepositoryRequest {
+    string name = 1;
+    string description = 2;
+    string gitignore = 3;
+}
+
+message UpdateRepositoryRequest {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+}
+
+message DeleteRepositoryRequest {
+    string id = 1;
+}
+
+message Empty {}
+
+
+message RepositoryResponse {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+}
+
+message ListRepositoryResponse {
+    repeated RepositoryResponse repositories = 1;
+}
