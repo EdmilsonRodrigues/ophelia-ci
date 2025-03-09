@@ -1,0 +1,7 @@
+#!/bin/sh
+addgroup --system git
+adduser --system --ingroup git --home /var/lib/git git
+chown -R git:git /var/lib/git
+chmod 750 /var/lib/git
+systemctl enable ophelia-ci-server.service
+systemctl start ophelia-ci-server.service

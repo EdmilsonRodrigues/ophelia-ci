@@ -1,0 +1,12 @@
+[Unit]
+Description=The Ophelia CI Server.
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ophelia-ci-server
+Restart=on-failure
+User=git
+
+[Install]
+WantedBy=multi-user.target
