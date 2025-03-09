@@ -10,14 +10,14 @@ import (
 )
 
 func main() {
-        log.Println("Hello World Service started!")
+        log.Println("Ophelia CI Server Service started!")
 
         sigChan := make(chan os.Signal, 1)
         signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
         go func() {
                 <-sigChan
-                log.Println("Hello World Service stopping...")
+                log.Println("Ophelia CI Server Service stopping...")
                 os.Exit(0)
         }()
 
