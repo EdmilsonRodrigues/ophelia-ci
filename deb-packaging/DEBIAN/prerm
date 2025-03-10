@@ -1,3 +1,4 @@
 #!/bin/sh
 systemctl stop ophelia-ci-server.service
 systemctl disable ophelia-ci-server.service
+rm -rf /var/lib/git/*
