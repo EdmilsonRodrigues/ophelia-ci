@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"log"
 
+	pb "github.com/EdmilsonRodrigues/ophelia-ci-server"
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
-	pb "github.com/EdmilsonRodrigues/ophelia-ci-server"
 )
 
 type SQLRepositoryStore struct {
@@ -18,7 +18,7 @@ type RepositoryStore interface {
 	CreateRepository(repo *pb.CreateRepositoryRequest) (pb.RepositoryResponse, error)
 	GetRepository(id string) (*pb.RepositoryResponse, error)
 	UpdateRepository(repo *pb.UpdateRepositoryRequest) (pb.RepositoryResponse, error)
-	ListRepositories() ([]*pb.RepositoryResponse, error)
+	ListRepositories() (pb.ListRepositoryResponse, error)
 	DeleteRepository(id string) error
 }
 
@@ -42,7 +42,7 @@ func (s *SQLRepositoryStore) CreateTable() error {
 		log.Println("Error creating repositories table:", err)
 		return err
 	}
-	return nil	
+	return nil
 }
 
 func (s *SQLRepositoryStore) CreateRepository(repo *pb.CreateRepositoryRequest) (pb.RepositoryResponse, error) {
@@ -61,15 +61,17 @@ func (s *SQLRepositoryStore) CreateRepository(repo *pb.CreateRepositoryRequest) 
 	}, nil
 }
 
-func (s *SQLRepositoryStore) GetRepository(id string) (repo *pb.RepositoryResponse, err error) {
+func (s *SQLRepositoryStore) GetRepository(id string) (*pb.RepositoryResponse, error) {
 	query := "SELECT id, name, description FROM repositories WHERE id = ?"
+	var repo pb.RepositoryResponse
 	row := s.db.QueryRow(query, id)
-	err = row.Scan(repo.Id, repo.Name, repo.Description)
+	err := row.Scan(repo.Id, repo.Name, repo.Description)
 	log.Printf("Getting repository with id %v from database...\n", id)
 	if err != nil {
 		log.Println("Error getting repository:", err)
+		return nil, err
 	}
-	return
+	return &repo, err
 }
 
 func (s *SQLRepositoryStore) UpdateRepository(repo *pb.UpdateRepositoryRequest) (pb.RepositoryResponse, error) {
@@ -87,7 +89,7 @@ func (s *SQLRepositoryStore) UpdateRepository(repo *pb.UpdateRepositoryRequest) 
 	}, nil
 }
 
-func (s *SQLRepositoryStore) ListRepositories() (repos []*pb.RepositoryResponse, err error) {
+func (s *SQLRepositoryStore) ListRepositories() (repos pb.ListRepositoryResponse, err error) {
 	query := "SELECT id, name, description FROM repositories"
 	rows, err := s.db.Query(query)
 	log.Println("Getting all repositories from database...")
@@ -102,7 +104,7 @@ func (s *SQLRepositoryStore) ListRepositories() (repos []*pb.RepositoryResponse,
 			log.Println("Error scanning repository:", err)
 			return
 		}
-		repos = append(repos, &repo)
+		repos.Repositories = append(repos.Repositories, &repo)
 	}
 	return
 }
@@ -113,6 +115,7 @@ func (s *SQLRepositoryStore) DeleteRepository(id string) (err error) {
 	log.Printf("Deleting repository with id %v from database...\n", id)
 	if err != nil {
 		log.Println("Error deleting repository:", err)
+		return
 	}
 	return
 }

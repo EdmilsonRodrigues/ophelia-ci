@@ -1,4 +1,4 @@
-package ophelia_ci_server
+package main
 
 import "testing"
 
