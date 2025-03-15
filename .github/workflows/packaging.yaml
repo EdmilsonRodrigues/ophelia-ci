@@ -9,7 +9,11 @@ on:
       - main
 
 jobs:
+  test:
+    uses: ./.github/workflows/tests.yml
+
   build:
+    needa: test
     runs-on: ubuntu-latest
 
     steps:
