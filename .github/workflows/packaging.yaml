@@ -2,8 +2,11 @@ name: Packaging
 
 on:
   push:
-    tags:
-      - 'main'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
