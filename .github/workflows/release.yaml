@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+        
+      - name: Unzip artifacts
+        run: unzip dist/*.zip -d dist/unzipped
+        
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/unzipped/*
+          geenrate_release_notes: true
