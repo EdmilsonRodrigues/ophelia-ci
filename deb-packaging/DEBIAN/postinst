@@ -1,7 +1,16 @@
 #!/bin/sh
-addgroup --system git
-adduser --system --ingroup git --home /var/lib/git git
-chown -R git:git /var/lib/git
-chmod 750 /var/lib/git
+set -e
+
+if ! id -g ophelia &> /dev/null; then
+    addgroup --system ophelia
+fi
+
+if ! id -u ophelia &> /dev/null; then
+    adduser --system --ingroup ophelia --home /var/lib/ophelia ophelia
+fi
+
+# chown -R ophelia:ophelia /var/lib/ophelia
+# chmod 750 /var/lib/ophelia
+
 systemctl enable ophelia-ci-server.service
 systemctl start ophelia-ci-server.service

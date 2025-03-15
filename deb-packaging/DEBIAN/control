@@ -1,5 +1,5 @@
 Package: ophelia-ci-server
-Version: 0.4.0 
+Version: 0.4.0
 Architecture: amd64
 Maintainer: Edmilson Rodrigues <edmilson.rodriguesn38@gmail.com>
 Description: A CI server that anyone can install in a VM and use to mange their projects with CI workflows.

@@ -1,4 +1,9 @@
 #!/bin/sh
-systemctl stop ophelia-ci-server.service
-systemctl disable ophelia-ci-server.service
-rm -rf /var/lib/git/*
+set -e
+
+systemctl stop ophelia-ci-server || true
+systemctl disable ophelia-ci-server || true
+
+if id -u ophelia &> /dev/null; then
+    userdel -r ophelia
+fi
