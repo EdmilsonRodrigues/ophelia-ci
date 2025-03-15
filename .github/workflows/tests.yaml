@@ -2,11 +2,8 @@ name: Test
 
 on:
   push:
-    branches:
-      - '**' # Matches all branches
   pull_request:
-    branches:
-      - '**' # Matches all branches
+  workflow_call:
 
 jobs:
   test:
