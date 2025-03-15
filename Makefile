@@ -1,6 +1,6 @@
 .PHONY: build, package_deb, build_and_package
 build:
-	go build -o deb-packaging/DEBIAN/usr/bin/ophelia-ci-server server/main.go
+	go build -o deb-packaging/usr/bin/ophelia-ci-server server/main.go
 package_deb:
 	./package_deb.bash
 package_snap:
