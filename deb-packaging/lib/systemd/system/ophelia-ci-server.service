@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 ExecStart=/usr/bin/ophelia-ci-server
 Restart=on-failure
-User=git
+User=ophelia
 
 [Install]
 WantedBy=multi-user.target
