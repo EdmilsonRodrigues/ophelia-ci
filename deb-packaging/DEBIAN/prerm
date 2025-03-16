@@ -1,9 +1,13 @@
 #!/bin/sh
 set -e
 
-systemctl stop ophelia-ci-server || true
-systemctl disable ophelia-ci-server || true
+systemctl stop ophelia-ci-server.service || true
+systemctl disable ophelia-ci-server.service || true
 
-if id -u ophelia &> /dev/null; then
+if id -u ophelia > /dev/null 2> /dev/null; then
     userdel -r ophelia
 fi
+
+systemctl daemon-reload --force
+echo "Daemon reloaded"
+

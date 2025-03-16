@@ -18,7 +18,7 @@ type server struct {
 func main() {
 	log.Println("Ophelia CI Server Service started!")
 
-	db, err := sql.Open("sqlite3", "/var/lib/git/repositories.db")
+	db, err := sql.Open("sqlite3", "/var/lib/ophelia/repositories.db")
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}

@@ -34,7 +34,7 @@ func (s *SQLRepositoryStore) CreateTable() error {
 		CREATE TABLE IF NOT EXISTS repositories (
 			id TEXT PRIMARY KEY,
 			name TEXT NOT NULL,
-			description TEXT,
+			description TEXT
 		);
 	`
 	_, err := s.db.Exec(query)

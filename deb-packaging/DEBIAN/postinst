@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
 
-if ! id -g ophelia &> /dev/null; then
+if ! id -g ophelia > /dev/null 2> /dev/null; then
     addgroup --system ophelia
 fi
 
-if ! id -u ophelia &> /dev/null; then
+if ! id -u ophelia > /dev/null 2> /dev/null; then
     adduser --system --ingroup ophelia --home /var/lib/ophelia ophelia
 fi
 
