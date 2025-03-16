@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	pb "github.com/EdmilsonRodrigues/ophelia-ci-server"
+	pb "github.com/EdmilsonRodrigues/ophelia-ci"
 )
 
 func (s *server) CreateRepository(ctx context.Context, req *pb.CreateRepositoryRequest) (*pb.RepositoryResponse, error) {

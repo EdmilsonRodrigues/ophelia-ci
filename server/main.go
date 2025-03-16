@@ -5,8 +5,8 @@ import (
 	"net"
 
 	"database/sql"
-	pb "github.com/EdmilsonRodrigues/ophelia-ci-server"
-	store "github.com/EdmilsonRodrigues/ophelia-ci-server/store"
+	pb "github.com/EdmilsonRodrigues/ophelia-ci"
+	store "github.com/EdmilsonRodrigues/ophelia-ci/server/store"
 	"google.golang.org/grpc"
 )
 
