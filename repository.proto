@@ -1,7 +1,7 @@
 syntax = "proto3";
 package ophelia_server;
 
-option go_package = "github.com/EdmilsonRodrigues/ophelia-ci-server";
+option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
 
 service RepositoryService {
     rpc CreateRepository(CreateRepositoryRequest) returns (RepositoryResponse);
