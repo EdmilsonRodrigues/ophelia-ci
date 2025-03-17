@@ -1,0 +1,7 @@
+ophelia-ci-client (0.5.0) unstable; urgency=medium
+
+  * Initial release.
+  * Added /etc/ophelia-ci directory.
+  * Added changelog file.
+
+ -- Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>  Mon, 17 Mar 2025 13:00:03 +0000

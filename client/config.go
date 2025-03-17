@@ -12,7 +12,6 @@ type Config struct {
 		Server	int	`toml:"server"`
 	} `toml:"client"`
 	SSL struct {
-		CertFile 	string	`toml:"cert_file"`
 		KeyFile 	string	`toml:"key_file"`
 	} `toml:"ssl"`
 }

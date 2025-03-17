@@ -17,6 +17,7 @@ type RepositoryStore interface {
 	CreateTable() error
 	CreateRepository(repo *pb.CreateRepositoryRequest) (pb.RepositoryResponse, error)
 	GetRepository(id string) (*pb.RepositoryResponse, error)
+	GetRepositoryByName(name string) (*pb.RepositoryResponse, error)
 	UpdateRepository(repo *pb.UpdateRepositoryRequest) (pb.RepositoryResponse, error)
 	ListRepositories() (pb.ListRepositoryResponse, error)
 	DeleteRepository(id string) error
@@ -24,9 +25,14 @@ type RepositoryStore interface {
 }
 
 func NewSQLRepositoryStore(db *sql.DB) *SQLRepositoryStore {
-	return &SQLRepositoryStore{
+	store := &SQLRepositoryStore{
 		db: db,
 	}
+	err := store.CreateTable()
+	if err != nil {
+		log.Fatalf("Failed to create repositories table: %v", err)
+	}
+	return store
 }
 
 func (s *SQLRepositoryStore) CreateTable() error {
@@ -66,8 +72,21 @@ func (s *SQLRepositoryStore) GetRepository(id string) (*pb.RepositoryResponse, e
 	query := "SELECT id, name, description FROM repositories WHERE id = ?"
 	var repo pb.RepositoryResponse
 	row := s.db.QueryRow(query, id)
-	err := row.Scan(repo.Id, repo.Name, repo.Description)
+	err := row.Scan(&repo.Id, &repo.Name, &repo.Description)
 	log.Printf("Getting repository with id %v from database...\n", id)
+	if err != nil {
+		log.Println("Error getting repository:", err)
+		return nil, err
+	}
+	return &repo, err
+}
+
+func (s *SQLRepositoryStore) GetRepositoryByName(name string) (*pb.RepositoryResponse, error) {
+	query := "SELECT id, name, description FROM repositories WHERE name = ?"
+	var repo pb.RepositoryResponse
+	row := s.db.QueryRow(query, name)
+	err := row.Scan(&repo.Id, &repo.Name, &repo.Description)
+	log.Printf("Getting repository with name %v from database...\n", name)
 	if err != nil {
 		log.Println("Error getting repository:", err)
 		return nil, err

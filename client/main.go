@@ -39,7 +39,7 @@ func main() {
 
         if len(os.Args) < 2 {
                 fmt.Println("Usage: cli <command> [arguments]")
-                fmt.Println("Commands: list, get, update, create")
+                fmt.Println("Commands: list, show, update, create")
                 os.Exit(1)
         }
 
@@ -66,7 +66,7 @@ func main() {
                 createCmd.Parse(os.Args[2:])
                 CreateRepository(ctx, client, *createName, *createDesc, *createGitignore)
         default:
-                fmt.Println("Invalid command. Use: list, get, update, create")
+                fmt.Println("Invalid command. Use: list, show, update, create")
                 os.Exit(1)
         }
 }

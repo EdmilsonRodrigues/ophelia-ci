@@ -37,9 +37,13 @@ func (s *server) ListRepository(ctx context.Context, req *pb.Empty) (*pb.ListRep
 	return &repos, err
 }
 
-func (s *server) GetRepository(ctx context.Context, req *pb.GetRepositoryRequest) (*pb.RepositoryResponse, error) {
+func (s *server) GetRepository(ctx context.Context, req *pb.GetRepositoryRequest) (response *pb.RepositoryResponse, err error) {
 	log.Printf("Getting repository with request: %v", req)
-	response, err := s.repositorieStore.GetRepository(req.Id)
+	if req.Id == "" {
+		response, err = s.repositorieStore.GetRepositoryByName(req.Name)
+	} else {
+		response, err = s.repositorieStore.GetRepository(req.Id)
+	}
 	if err != nil {
 		log.Printf("Error getting repository: %v", err)
 		return nil, err
