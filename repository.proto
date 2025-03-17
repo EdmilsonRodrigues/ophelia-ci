@@ -1,5 +1,5 @@
 syntax = "proto3";
-package ophelia_server;
+package ophelia;
 
 option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
 

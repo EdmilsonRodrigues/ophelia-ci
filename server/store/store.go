@@ -20,6 +20,7 @@ type RepositoryStore interface {
 	UpdateRepository(repo *pb.UpdateRepositoryRequest) (pb.RepositoryResponse, error)
 	ListRepositories() (pb.ListRepositoryResponse, error)
 	DeleteRepository(id string) error
+	Close() error
 }
 
 func NewSQLRepositoryStore(db *sql.DB) *SQLRepositoryStore {
@@ -118,4 +119,8 @@ func (s *SQLRepositoryStore) DeleteRepository(id string) (err error) {
 		return
 	}
 	return
+}
+
+func (s *SQLRepositoryStore) Close() error {
+	return s.db.Close()
 }

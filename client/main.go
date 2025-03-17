@@ -10,11 +10,11 @@ import (
 
         "google.golang.org/grpc"
         "google.golang.org/grpc/credentials/insecure"
-        pb "github.com/EdmilsonRodrigues/ophelia-ci" // Replace with your actual import path
+        pb "github.com/EdmilsonRodrigues/ophelia-ci"
 )
 
 const (
-        address = "localhost:50051" // Replace with your server address
+        address = "localhost:50051"
 )
 
 func main() {
@@ -43,7 +43,7 @@ func main() {
                 os.Exit(1)
         }
 
-        conn, err := grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+        conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
         if err != nil {
                 log.Fatalf("did not connect: %v", err)
         }
@@ -55,23 +55,23 @@ func main() {
         switch os.Args[1] {
         case "list":
                 listCmd.Parse(os.Args[2:])
-                listRepositories(ctx, client)
-        case "get":
+                ListRepositories(ctx, client)
+        case "show":
                 getCmd.Parse(os.Args[2:])
-                getRepository(ctx, client, *getID, *getName)
+                GetRepository(ctx, client, *getID, *getName)
         case "update":
                 updateCmd.Parse(os.Args[2:])
-                updateRepository(ctx, client, *updateID, *updateName, *updateDesc)
+                UpdateRepository(ctx, client, *updateID, *updateName, *updateDesc)
         case "create":
                 createCmd.Parse(os.Args[2:])
-                createRepository(ctx, client, *createName, *createDesc, *createGitignore)
+                CreateRepository(ctx, client, *createName, *createDesc, *createGitignore)
         default:
                 fmt.Println("Invalid command. Use: list, get, update, create")
                 os.Exit(1)
         }
 }
 
-func listRepositories(ctx context.Context, client pb.RepositoryServiceClient) {
+func ListRepositories(ctx context.Context, client pb.RepositoryServiceClient) {
         res, err := client.ListRepository(ctx, &pb.Empty{})
         if err != nil {
                 log.Fatalf("failed to list repositories: %v", err)
@@ -81,7 +81,7 @@ func listRepositories(ctx context.Context, client pb.RepositoryServiceClient) {
         }
 }
 
-func getRepository(ctx context.Context, client pb.RepositoryServiceClient, id, name string) {
+func GetRepository(ctx context.Context, client pb.RepositoryServiceClient, id, name string) {
         res, err := client.GetRepository(ctx, &pb.GetRepositoryRequest{Id: id, Name: name})
         if err != nil {
                 log.Fatalf("failed to get repository: %v", err)
@@ -89,7 +89,7 @@ func getRepository(ctx context.Context, client pb.RepositoryServiceClient, id, n
         fmt.Printf("ID: %s, Name: %s, Description: %s\n", res.Id, res.Name, res.Description)
 }
 
-func updateRepository(ctx context.Context, client pb.RepositoryServiceClient, id, name, desc string) {
+func UpdateRepository(ctx context.Context, client pb.RepositoryServiceClient, id, name, desc string) {
         res, err := client.UpdateRepository(ctx, &pb.UpdateRepositoryRequest{Id: id, Name: name, Description: desc})
         if err != nil {
                 log.Fatalf("failed to update repository: %v", err)
@@ -97,7 +97,7 @@ func updateRepository(ctx context.Context, client pb.RepositoryServiceClient, id
         fmt.Printf("Updated Repository: ID: %s, Name: %s, Description: %s\n", res.Id, res.Name, res.Description)
 }
 
-func createRepository(ctx context.Context, client pb.RepositoryServiceClient, name, desc, gitignore string) {
+func CreateRepository(ctx context.Context, client pb.RepositoryServiceClient, name, desc, gitignore string) {
         res, err := client.CreateRepository(ctx, &pb.CreateRepositoryRequest{Name: name, Description: desc, Gitignore: gitignore})
         if err != nil {
                 log.Fatalf("failed to create repository: %v", err)

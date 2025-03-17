@@ -12,5 +12,8 @@ fi
 # chown -R ophelia:ophelia /var/lib/ophelia
 # chmod 750 /var/lib/ophelia
 
+chown root:ophelia /etc/ophelia-ci/server-config.toml
+chmod 644 /etc/ophelia-ci/server-config.toml
+
 systemctl enable ophelia-ci-server.service
 systemctl start ophelia-ci-server.service

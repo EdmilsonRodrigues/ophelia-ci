@@ -1,0 +1,3 @@
+usr/bin/ophelia-ci-server usr/bin/
+usr/lib/systemd/system/ophelia-ci-server.service usr/lib/systemd/system/
+etc/ophelia-ci/server-config.toml etc/ophelia-ci/
