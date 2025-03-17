@@ -1,3 +1,12 @@
+ophelia-ci-server (0.5.0ubuntu5) UNRELEASED; urgency=medium
+
+  * Fixed bugs on get repo
+  * Added dch to changelog management
+  * Added dch to Makefile
+  * Added bash to changelog
+
+ -- Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>  Mon, 17 Mar 2025 16:28:53 +0000
+
 ophelia-ci-server (0.4.0) unstable; urgency=medium
 
   * Initial release.
