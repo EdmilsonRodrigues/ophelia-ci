@@ -1,0 +1,10 @@
+ophelia-ci-server (0.4.0) unstable; urgency=medium
+
+  * Initial release.
+  * Added systemd service file.
+  * Created ophelia user and group.
+  * Added /lib/systemd/system/ophelia-ci-server.service file.
+  * Added /etc/ophelia-ci directory.
+  * Added changelog file.
+
+ -- Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>  Mon, 17 Mar 2025 08:19:22 +0000
