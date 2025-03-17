@@ -33,12 +33,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Build
-        run: make build
+      - name: Build Server
+        run: |
+          cd server
+          make build
 
-      - name: Package Deb
+      - name: Package Server Deb
         run: |
           make package_deb
+          cd ../
+        
+      - name: Build Client
+        run: |
+          cd client
+          make build
+
+      - name: Package Client Deb
+        run: |
+          make package_deb
+          cd ../
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
