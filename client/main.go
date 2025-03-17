@@ -19,7 +19,7 @@ const (
 
 func main() {
         listCmd := flag.NewFlagSet("list", flag.ExitOnError)
-        getCmd := flag.NewFlagSet("get", flag.ExitOnError)
+        getCmd := flag.NewFlagSet("show", flag.ExitOnError)
         updateCmd := flag.NewFlagSet("update", flag.ExitOnError)
         createCmd := flag.NewFlagSet("create", flag.ExitOnError)
 

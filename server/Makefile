@@ -6,7 +6,7 @@ package_deb:
 package_snap:
 	./package_snap.bash
 build_and_package:
-	rm -rf dist/*
+	rm -rf dist/ophelia-ci-server*
 	make build && make package_deb && make package_snap
 	mv ophelia* dist/
 

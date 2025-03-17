@@ -10,7 +10,7 @@ import (
 type Config struct {
 	Server struct {
 		Port	int	`toml:"port"`
-	}
+	} `toml:"server"`
 	SSL struct {
 		CertFile 	string	`toml:"cert_file"`
 		KeyFile 	string	`toml:"key_file"`
