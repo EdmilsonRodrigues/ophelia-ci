@@ -5,5 +5,37 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "fastapi[all]>=0.115.11",
     "grpcio-tools>=1.71.0",
+    "pydantic[email]>=2.10.6",
+    "types-protobuf>=5.29.1.20250315",
 ]
+
+[dependency-groups]
+test = [
+    "pytest-cov>=6.0.0",
+    "pytest>=8.3.5",
+    "pytest-randomly>=3.16.0",
+]
+dev = [
+    "mypy>=1.15.0",
+    "ruff>=0.11.0",
+]
+
+[tool.ruff]
+preview = true
+line-length = 79
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+docstring-code-format = true
+docstring-code-line-length = 72
+preview = true
+
+
+[tool.ruff.lint]
+select = ["I", "UP", "F", "E", "W"]
+
+[tool.mypy]
+exclude = 'repository_pb2.py|repository_pb2_grpc.py'
