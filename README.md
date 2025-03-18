@@ -92,6 +92,3 @@ This project is licensed under the GPLv3 License.
 ## Contact
 
 For questions and support, please open an issue or contact [edmilon.monteiro.rodrigues@gmail.com](mailto:edmilon.monteiro.rodrigues@gmail.com).
-
-[YOUR_RELEASES_PAGE_URL]: (Replace with the URL to your releases page)
-[edmilon.monteiro.rodrigues@gmail.com](mailto:edmilon.monteiro.rodrigues@gmail.com)
