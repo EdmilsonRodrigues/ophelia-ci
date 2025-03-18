@@ -1,5 +1,5 @@
 #!/bin/sh
 set -e
 
-chown root:ophelia /etc/ophelia-ci/client-config.toml
+chown root:root /etc/ophelia-ci/client-config.toml
 chmod 644 /etc/ophelia-ci/client-config.toml

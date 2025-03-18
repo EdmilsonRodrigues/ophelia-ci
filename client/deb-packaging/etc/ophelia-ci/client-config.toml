@@ -1,2 +1,2 @@
 [client]
-server = "http://localhost:50051"  # Ophelia CI server address
+server = "localhost:50051"  # Ophelia CI server address

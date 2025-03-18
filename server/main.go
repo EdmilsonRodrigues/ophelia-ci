@@ -28,7 +28,7 @@ func main() {
 	}
 	defer repoStore.Close()
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", config.Server.Port))
+	lis, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", config.Server.Port))
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}

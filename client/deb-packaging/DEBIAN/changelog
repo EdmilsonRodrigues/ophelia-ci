@@ -1,3 +1,9 @@
+ophelia-ci-client (0.5.0ubuntu1) UNRELEASED; urgency=medium
+
+  * Fixed client configuration
+
+ -- Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>  Tue, 18 Mar 2025 18:42:41 +0000
+
 ophelia-ci-client (0.5.0) unstable; urgency=medium
 
   * Initial release.

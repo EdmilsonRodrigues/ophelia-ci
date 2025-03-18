@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	Client struct {
-		Server	int	`toml:"server"`
+		Server	string	`toml:"server"`
 	} `toml:"client"`
 	SSL struct {
 		KeyFile 	string	`toml:"key_file"`
@@ -17,7 +17,7 @@ type Config struct {
 }
 
 func LoadConfig() (config Config) {
-	data, err := os.ReadFile("/etc/ophelia-ci/server-config.toml")
+	data, err := os.ReadFile("/etc/ophelia-ci/client-config.toml")
 	if err != nil {
 		panic(err)
 	}

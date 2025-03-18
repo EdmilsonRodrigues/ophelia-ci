@@ -1,21 +1,25 @@
 import sys
-from datetime import datetime
-from functools import cache
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi import Body, FastAPI, Request, status
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import UUID4, BaseModel
+from pydantic import BaseModel
 
 from ophelia_ci_interface.config import GITIGNORE_OPTIONS, VERSION, Settings
-from ophelia_ci_interface.services.gRPC_service import RepositoryService
+from ophelia_ci_interface.models.repository import (
+    CreateRepositoryRequest,
+    Repository,
+    UpdateRepositoryRequest,
+)
 
 app = FastAPI(version=VERSION)
-
 base_path = (
-    Path(next(path for path in sys.path if 'app' in path))
+    Path('ophelia_ci_interface')
+    if Settings().DEBUG
+    else Path(next(path for path in sys.path if 'app' in path))
     / 'ophelia_ci_interface'
 )
 app.mount(
@@ -37,100 +41,63 @@ class Modal(BaseModel):
     title: str
     items: list[ModalItem] = []
     submit: str
+    submit_id: str
 
 
-class Repository(BaseModel):
-    model_config = {'arbitrary_types_allowed': True}
+repositories_modal = Modal(
+    title='Create repository',
+    items=[
+        ModalItem(
+            id='repository_name',
+            label='Repository name',
+            type='text',
+            autocomplete='off',
+        ),
+        ModalItem(
+            id='repository_description',
+            label='Repository description',
+            type='text',
+            autocomplete='off',
+        ),
+        ModalItem(
+            id='repository_gitignore',
+            label='Repository gitignore',
+            type='select',
+            options=GITIGNORE_OPTIONS,
+        ),
+    ],
+    submit='Add repository',
+    submit_id='repository-create',
+)
 
-    id: UUID4
-    name: str
-    description: str
-    last_updated: datetime
-
-    @staticmethod
-    @cache
-    def get_service() -> RepositoryService:
-        return RepositoryService(Settings().GRPC_SERVER)
-
-    @property
-    def truncated_description(self):
-        if len(self.description) > 100:
-            return self.description[:100] + '...'
-        return self.description
-
-    @property
-    def clone_url(self):
-        return f'git@{str(Settings().GRPC_SERVER).rstrip("/")}:{self.name}.git'
-
-    @classmethod
-    def get_status(cls):
-        return cls.get_service().get_status()
-
-    @classmethod
-    def create(cls, name: str, description: str):
-        response = cls.get_service().create_repository(name, description)
-        return cls(
-            id=response.id,
-            name=response.name,
-            description=response.description,
-            last_updated=response.last_updated,
-        )
-
-    @classmethod
-    def update(cls, id: str, name: str, description: str):
-        response = cls.get_service().update_repository(id, name, description)
-        return cls(
-            id=response.id,
-            name=response.name,
-            description=response.description,
-            last_updated=response.last_updated,
-        )
-
-    @classmethod
-    def get(cls, id: str):
-        response = cls.get_service().get_repository(id)
-        return cls(
-            id=response.id,
-            name=response.name,
-            description=response.description,
-            last_updated=response.last_updated,
-        )
-
-    @classmethod
-    def get_by_name(cls, name: str):
-        response = cls.get_service().get_by_name(name)
-        return cls(
-            id=response.id,
-            name=response.name,
-            description=response.description,
-            last_updated=response.last_updated,
-        )
-
-    @classmethod
-    def delete(cls, id: str):
-        cls.get_service().delete_repository(id)
-
-    @classmethod
-    def get_all(cls):
-        response_list = cls.get_service().get_repositories()
-        return [
-            cls(
-                id=response.id,
-                name=response.name,
-                description=response.description,
-                last_updated=response.last_updated,
-            )
-            for response in response_list
-        ]
+repository_modal = Modal(
+    title='Update repository',
+    items=[
+        ModalItem(
+            id='repository_name',
+            label='Repository name',
+            type='text',
+            autocomplete='off',
+        ),
+        ModalItem(
+            id='repository_description',
+            label='Repository description',
+            type='text',
+            autocomplete='off',
+        ),
+    ],
+    submit='Update repository',
+    submit_id='repository-update',
+)
 
 
-@app.get('/')
-async def root():
+@app.get('/health')
+def root():
     return {'version': VERSION}
 
 
-@app.get('/home', response_class=HTMLResponse)
-async def home(request: Request):
+@app.get('/', response_class=HTMLResponse)
+def home(request: Request):
     return template.TemplateResponse(
         'index.html',
         {
@@ -143,58 +110,59 @@ async def home(request: Request):
 
 
 @app.get('/repositories', response_class=HTMLResponse)
-async def repositories(request: Request):
+def repositories(request: Request):
     return template.TemplateResponse(
         'repositories.html',
         {
             'request': request,
             'title': 'Repositories - Ophelia CI',
             'page_title': 'Your repositories',
-            'modal': Modal(
-                title='Create repository',
-                items=[
-                    ModalItem(
-                        id='repository-name',
-                        label='Repository name',
-                        type='text',
-                        autocomplete='off',
-                    ),
-                    ModalItem(
-                        id='repository-description',
-                        label='Repository description',
-                        type='text',
-                        autocomplete='off',
-                    ),
-                    ModalItem(
-                        id='repository-gitignore',
-                        label='Repository gitignore',
-                        type='select',
-                        options=GITIGNORE_OPTIONS,
-                    ),
-                ],
-                submit='Add repository',
-            ),
+            'modal': repositories_modal,
             'status': Repository.get_status(),
             'repositories': Repository.get_all(),
         },
     )
 
 
+@app.post('/repositories', response_class=HTMLResponse)
+def create_repository(request: Request, body: CreateRepositoryRequest):
+    Repository.create(body.name, body.description, body.gitignore)
+
+    return repositories(request)
+
+
 @app.get('/repositories/{repo_name}', response_class=HTMLResponse)
-async def repository(request: Request, repo_name: str):
+def repository(request: Request, repo_name: str):
+    repository = Repository.get_by_name(repo_name)
     return template.TemplateResponse(
         'repository.html',
         {
             'request': request,
             'repo_name': repo_name,
             'status': Repository.get_status(),
-            'repository': Repository.get(repo_name),
+            'repository': repository,
+            'id': repository.id,
+            'modal': repository_modal,
         },
     )
 
 
+@app.put('/repositories/{repo_name}', status_code=204)
+def update_repository(request: Request, body: UpdateRepositoryRequest):
+    Repository.update(body.id, body.name, body.description)
+
+
+@app.delete('/repositories/{repo_name}', response_class=RedirectResponse)
+def delete_repository(request: Request, id: Annotated[str, Body(embed=True)]):
+    Repository.delete(id)
+    return RedirectResponse(
+        url=request.url_for('repositories'),
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
+
+
 @app.get('/users', response_class=HTMLResponse)
-async def users(request: Request):
+def users(request: Request):
     return template.TemplateResponse(
         'users.html',
         {
@@ -205,7 +173,7 @@ async def users(request: Request):
 
 
 @app.get('/users/{user_name}', response_class=HTMLResponse)
-async def user(request: Request, user_name: str):
+def user(request: Request, user_name: str):
     return template.TemplateResponse(
         'user.html',
         {

@@ -3,10 +3,12 @@ package ophelia_ci_server
 import (
 	"database/sql"
 	"log"
+	"time"
 
 	pb "github.com/EdmilsonRodrigues/ophelia-ci"
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type SQLRepositoryStore struct {
@@ -38,12 +40,13 @@ func NewSQLRepositoryStore(db *sql.DB) *SQLRepositoryStore {
 func (s *SQLRepositoryStore) CreateTable() error {
 	log.Println("Creating repositories table...")
 	query := `
-		CREATE TABLE IF NOT EXISTS repositories (
-			id TEXT PRIMARY KEY,
-			name TEXT NOT NULL,
-			description TEXT
-		);
-	`
+        CREATE TABLE IF NOT EXISTS repositories (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT,
+            last_update INTEGER
+        );
+    `
 	_, err := s.db.Exec(query)
 	if err != nil {
 		log.Println("Error creating repositories table:", err)
@@ -54,8 +57,9 @@ func (s *SQLRepositoryStore) CreateTable() error {
 
 func (s *SQLRepositoryStore) CreateRepository(repo *pb.CreateRepositoryRequest) (pb.RepositoryResponse, error) {
 	id := uuid.New().String()
-	query := "INSERT INTO repositories (id, name, description) VALUES (?, ?, ?)"
-	_, err := s.db.Exec(query, id, repo.Name, repo.Description)
+	now := timestamppb.Now()
+	query := "INSERT INTO repositories (id, name, description, last_update) VALUES (?, ?, ?, ?)"
+	_, err := s.db.Exec(query, id, repo.Name, repo.Description, now.Seconds)
 	log.Printf("Inserting repository %v with id %v into database...\n", repo.Name, id)
 	if err != nil {
 		log.Println("Error inserting repository:", err)
@@ -65,38 +69,42 @@ func (s *SQLRepositoryStore) CreateRepository(repo *pb.CreateRepositoryRequest) 
 		Id:          id,
 		Name:        repo.Name,
 		Description: repo.Description,
+		LastUpdate:  now,
 	}, nil
 }
 
 func (s *SQLRepositoryStore) GetRepository(id string) (*pb.RepositoryResponse, error) {
-	query := "SELECT id, name, description FROM repositories WHERE id = ?"
+	query := "SELECT id, name, description, last_update FROM repositories WHERE id = ?"
 	var repo pb.RepositoryResponse
+	var lastUpdateSeconds int64
 	row := s.db.QueryRow(query, id)
-	err := row.Scan(&repo.Id, &repo.Name, &repo.Description)
+	err := row.Scan(&repo.Id, &repo.Name, &repo.Description, &lastUpdateSeconds)
 	log.Printf("Getting repository with id %v from database...\n", id)
 	if err != nil {
 		log.Println("Error getting repository:", err)
 		return nil, err
 	}
+	repo.LastUpdate = timestamppb.New(time.Unix(lastUpdateSeconds, 0))
 	return &repo, err
 }
 
 func (s *SQLRepositoryStore) GetRepositoryByName(name string) (*pb.RepositoryResponse, error) {
-	query := "SELECT id, name, description FROM repositories WHERE name = ?"
+	query := "SELECT id, name, description, last_update FROM repositories WHERE name = ?"
 	var repo pb.RepositoryResponse
+	var lastUpdateSeconds int64
 	row := s.db.QueryRow(query, name)
-	err := row.Scan(&repo.Id, &repo.Name, &repo.Description)
-	log.Printf("Getting repository with name %v from database...\n", name)
+	err := row.Scan(&repo.Id, &repo.Name, &repo.Description, &lastUpdateSeconds)
 	if err != nil {
-		log.Println("Error getting repository:", err)
 		return nil, err
 	}
-	return &repo, err
+	repo.LastUpdate = timestamppb.New(time.Unix(lastUpdateSeconds, 0))
+	return &repo, nil
 }
 
 func (s *SQLRepositoryStore) UpdateRepository(repo *pb.UpdateRepositoryRequest) (pb.RepositoryResponse, error) {
-	query := "UPDATE repositories SET name = ?, description = ? WHERE id = ?"
-	_, err := s.db.Exec(query, repo.Name, repo.Description, repo.Id)
+	now := timestamppb.Now()
+	query := "UPDATE repositories SET name = ?, description = ?, last_update = ? WHERE id = ?"
+	_, err := s.db.Exec(query, repo.Name, repo.Description, now.Seconds, repo.Id)
 	log.Printf("Updating repository with id %v in database...\n", repo.Id)
 	if err != nil {
 		log.Println("Error updating repository:", err)
@@ -106,11 +114,12 @@ func (s *SQLRepositoryStore) UpdateRepository(repo *pb.UpdateRepositoryRequest) 
 		Id:          repo.Id,
 		Name:        repo.Name,
 		Description: repo.Description,
+		LastUpdate:  now,
 	}, nil
 }
 
 func (s *SQLRepositoryStore) ListRepositories() (repos pb.ListRepositoryResponse, err error) {
-	query := "SELECT id, name, description FROM repositories"
+	query := "SELECT id, name, description, last_update FROM repositories"
 	rows, err := s.db.Query(query)
 	log.Println("Getting all repositories from database...")
 	if err != nil {
@@ -119,11 +128,13 @@ func (s *SQLRepositoryStore) ListRepositories() (repos pb.ListRepositoryResponse
 	defer rows.Close()
 	for rows.Next() {
 		var repo pb.RepositoryResponse
-		err = rows.Scan(&repo.Id, &repo.Name, &repo.Description)
+		var lastUpdateSeconds int64
+		err = rows.Scan(&repo.Id, &repo.Name, &repo.Description, &lastUpdateSeconds)
 		if err != nil {
 			log.Println("Error scanning repository:", err)
 			return
 		}
+		repo.LastUpdate = timestamppb.New(time.Unix(lastUpdateSeconds, 0))
 		repos.Repositories = append(repos.Repositories, &repo)
 	}
 	return

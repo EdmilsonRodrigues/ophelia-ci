@@ -13,11 +13,8 @@ import (
         pb "github.com/EdmilsonRodrigues/ophelia-ci"
 )
 
-const (
-        address = "localhost:50051"
-)
-
 func main() {
+        config := LoadConfig()
         listCmd := flag.NewFlagSet("list", flag.ExitOnError)
         getCmd := flag.NewFlagSet("show", flag.ExitOnError)
         updateCmd := flag.NewFlagSet("update", flag.ExitOnError)
@@ -43,7 +40,7 @@ func main() {
                 os.Exit(1)
         }
 
-        conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+        conn, err := grpc.NewClient(config.Client.Server, grpc.WithTransportCredentials(insecure.NewCredentials()))
         if err != nil {
                 log.Fatalf("did not connect: %v", err)
         }

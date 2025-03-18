@@ -1,7 +1,18 @@
 syntax = "proto3";
 package ophelia;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
+
+service HealthService {
+    rpc Health(Empty) returns (HealthResponse);
+}
+
+message Empty {}
+message HealthResponse {
+    string status = 1;
+}
 
 service RepositoryService {
     rpc CreateRepository(CreateRepositoryRequest) returns (RepositoryResponse);
@@ -32,13 +43,11 @@ message DeleteRepositoryRequest {
     string id = 1;
 }
 
-message Empty {}
-
-
 message RepositoryResponse {
     string id = 1;
     string name = 2;
     string description = 3;
+    google.protobuf.Timestamp last_update = 4;
 }
 
 message ListRepositoryResponse {

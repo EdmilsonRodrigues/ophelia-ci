@@ -50,6 +50,10 @@ jobs:
 
       - name: Install the project
         run: uv sync --all-extras --dev
+      
+      - name: Install flatpak
+        run: |
+          sudo apt-get install flatpak flatpak-builder
 
       - name: Build
         run: |
