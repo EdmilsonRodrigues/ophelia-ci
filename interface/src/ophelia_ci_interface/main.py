@@ -1,6 +1,7 @@
+import sys
 from datetime import datetime
 from functools import cache
-from uuid import uuid4
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
@@ -8,14 +9,20 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import UUID4, BaseModel
 
-from app.config import GITIGNORE_OPTIONS, VERSION, Settings
-from app.services.gRPC_service import RepositoryService
+from ophelia_ci_interface.config import GITIGNORE_OPTIONS, VERSION, Settings
+from ophelia_ci_interface.services.gRPC_service import RepositoryService
 
 app = FastAPI(version=VERSION)
 
-app.mount('/static', StaticFiles(directory='app/static'), name='static')
+base_path = (
+    Path(next(path for path in sys.path if 'app' in path))
+    / 'ophelia_ci_interface'
+)
+app.mount(
+    '/static', StaticFiles(directory=base_path / 'static'), name='static'
+)
 
-template = Jinja2Templates(directory='app/templates')
+template = Jinja2Templates(directory=base_path / 'templates')
 
 
 class ModalItem(BaseModel):
@@ -82,6 +89,16 @@ class Repository(BaseModel):
     @classmethod
     def get(cls, id: str):
         response = cls.get_service().get_repository(id)
+        return cls(
+            id=response.id,
+            name=response.name,
+            description=response.description,
+            last_updated=response.last_updated,
+        )
+
+    @classmethod
+    def get_by_name(cls, name: str):
+        response = cls.get_service().get_by_name(name)
         return cls(
             id=response.id,
             name=response.name,
@@ -158,23 +175,7 @@ async def repositories(request: Request):
                 submit='Add repository',
             ),
             'status': Repository.get_status(),
-            'repositories': [
-                Repository(
-                    id=uuid4(),
-                    name='test',
-                    description='This is a bery long test description. '
-                    'I am making it longer and longer to see if it works.',
-                    last_updated=datetime.now(),
-                ),
-                Repository(
-                    id=uuid4(),
-                    name='test3',
-                    description='This is a very longer test description. '
-                    'I am making it longer and longer to see if it works. '
-                    'This is just more text to make it longer.',
-                    last_updated=datetime.now(),
-                ),
-            ],
+            'repositories': Repository.get_all(),
         },
     )
 
@@ -187,13 +188,7 @@ async def repository(request: Request, repo_name: str):
             'request': request,
             'repo_name': repo_name,
             'status': Repository.get_status(),
-            'repository': Repository(
-                id=uuid4(),
-                name=repo_name,
-                description='This is a bery long test description. '
-                'I am making it longer and longer to see if it works.',
-                last_updated=datetime.now(),
-            ),
+            'repository': Repository.get(repo_name),
         },
     )
 

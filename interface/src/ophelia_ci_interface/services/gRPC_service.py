@@ -1,7 +1,6 @@
 import grpc
-
-import app.services.repository_pb2 as repository_pb2
-import app.services.repository_pb2_grpc as repository_pb2_grpc
+import ophelia_ci_interface.services.repository_pb2 as repository_pb2
+import ophelia_ci_interface.services.repository_pb2_grpc as repository_pb2_grpc
 
 
 class RepositoryService:
@@ -43,6 +42,12 @@ class RepositoryService:
     def get_repository(self, id: str):
         response_get = self.stub.GetRepository(
             repository_pb2.GetRepositoryRequest(id=id)
+        )
+        return response_get
+
+    def get_by_name(self, name: str):
+        response_get = self.stub.GetRepositoryByName(
+            repository_pb2.GetRepositoryByNameRequest(name=name)
         )
         return response_get
 

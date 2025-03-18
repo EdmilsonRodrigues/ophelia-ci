@@ -1,45 +1,113 @@
-[project]
-name = "ophelia-ci-interface"
-version = "0.1.0"
-description = "This is a Python project to create a web page interface for an Ophelia CI server."
-readme = "README.md"
-requires-python = ">=3.13"
-dependencies = [
+# This project was generated with 0.3.22 using template: https://github.com/beeware/briefcase-template@v0.3.22
+[tool.briefcase]
+project_name = "Ophelia CI"
+bundle = "com.planetae"
+version = "0.0.1"
+url = "https://planetae.com/ophelia-ci-interface"
+license.file = "LICENSE"
+author = "Edmilson Rodrigues"
+author_email = "edmilson.monteiro.rodrigues@gmail.com"
+
+requires = [
     "fastapi[all]>=0.115.11",
     "grpcio-tools>=1.71.0",
     "jinja2>=3.1.6",
     "pydantic-settings>=2.8.1",
     "pydantic[email]>=2.10.6",
     "types-protobuf>=5.29.1.20250315",
+    "uvicorn>=0.34.0",    
 ]
 
-[dependency-groups]
-test = [
-    "pytest-cov>=6.0.0",
-    "pytest>=8.3.5",
-    "pytest-randomly>=3.16.0",
+[tool.briefcase.app.ophelia-ci-interface]
+formal_name = "Ophelia CI Interface"
+description = "A web interface to interact with the Ophelia CI server"
+long_description = """More details about the app should go here.
+"""
+sources = [
+    "src/ophelia_ci_interface",
 ]
-dev = [
-    "behave>=1.2.6",
-    "mypy>=1.15.0",
-    "ruff>=0.11.0",
+test_sources = [
+    "tests",
 ]
 
-[tool.ruff]
-preview = true
-line-length = 79
-exclude = ["app/services/repository_pb2.py", "app/services/repository_pb2_grpc.py"]
+requires = [
+    # Add your cross-platform app requirements here
+]
+test_requires = [
+    # Add your cross-platform test requirements here
+]
 
-[tool.ruff.format]
-quote-style = "single"
-indent-style = "space"
-docstring-code-format = true
-docstring-code-line-length = 72
-preview = true
+[tool.briefcase.app.ophelia-ci-interface.macOS]
+universal_build = true
+requires = [
+    # Add your macOS-specific app requirements here
+]
 
+[tool.briefcase.app.ophelia-ci-interface.linux]
+requires = [
+    # Add your Linux-specific app requirements here
+]
 
-[tool.ruff.lint]
-select = ["I", "UP", "F", "E", "W"]
+[tool.briefcase.app.ophelia-ci-interface.linux.system.debian]
+system_requires = [
+    # Add any system packages needed at build the app here
+]
 
-[tool.mypy]
-exclude = 'repository_pb2.py|repository_pb2_grpc.py'
+system_runtime_requires = [
+    # Add any system packages needed at runtime here
+]
+
+[tool.briefcase.app.ophelia-ci-interface.linux.system.rhel]
+system_requires = [
+    # Add any system packages needed at build the app here
+]
+
+system_runtime_requires = [
+    # Add any system packages needed at runtime here
+]
+
+[tool.briefcase.app.ophelia-ci-interface.linux.system.suse]
+system_requires = [
+    # Add any system packages needed at build the app here
+]
+
+system_runtime_requires = [
+    # Add any system packages needed at runtime here
+]
+
+[tool.briefcase.app.ophelia-ci-interface.linux.system.arch]
+system_requires = [
+    # Add any system packages needed at build the app here
+]
+
+system_runtime_requires = [
+    # Add any system packages needed at runtime here
+]
+
+[tool.briefcase.app.ophelia-ci-interface.linux.flatpak]
+flatpak_runtime = "org.freedesktop.Platform"
+flatpak_runtime_version = "24.08"
+flatpak_sdk = "org.freedesktop.Sdk"
+
+[tool.briefcase.app.ophelia-ci-interface.windows]
+requires = [
+    # Add your Windows-specific app requirements here
+]
+
+# Mobile deployments
+[tool.briefcase.app.ophelia-ci-interface.iOS]
+requires = [
+    # Add your iOS-specific app requirements here
+]
+
+[tool.briefcase.app.ophelia-ci-interface.android]
+requires = [
+    # Add your Android-specific app requirements here
+]
+
+# Web deployments
+[tool.briefcase.app.ophelia-ci-interface.web]
+requires = [
+    # Add your web-specific app requirements here
+]
+
