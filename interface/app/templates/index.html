@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="p-section">
+    <hr class="p-rule">
+    <h3>Ophelia CI: Your Open-Source Git Server Solution</h3>
+
+    <div class="p-section--shallow">
+        <p> Ophelia CI empowers teams to host and manage their own Git repositories
+            with ease.</p>
+    </div>
+    <h4><strong>This comprehensive solution provides:</strong></h4>
+    <div class="p-section--shallow">
+        <strong>A robust Git Server:</strong> A high-performance Linux daemon, written in Go,
+        available in multiple formats (.deb, .snap, .rock) and via Docker,
+        ensuring seamless integration into your infrastructure.
+    </div>
+    <div class="p-section--shallow">
+        <strong>A versatile CLI Client:</strong> A command-line interface, also built in Go and
+        distributed in the same formats, for efficient repository management.
+    </div>
+    <div class="p-section--shallow">
+        <strong>A user-friendly Web Interface:</strong> A graphical web application, developed with
+        Python and FastAPI, offering an intuitive experience, packaged in various formats
+        (.deb, .snap, .rock, .AppImage, .flatpak) and through Docker.
+    </div>
+    <div class="p-section--shallow">
+        Ophelia CI is designed for flexibility and control, allowing you to tailor
+        your Git workflow to your team's specific needs.
+    </div>
+
+    <h4><strong>Coming Soon: Integrated CI/CD</strong></h4>
+
+    <div class="p-section--shallow">
+        Our roadmap includes the development of a built-in Continuous Integration (CI) tool. Users will be able to
+        define
+        workflows using YAML configurations, automating tests and ensuring code quality directly within Ophelia CI.
+    </div>
+
+    <div class="p-section--shallow" style="text-align: justify;">
+        <h3>Ophelia CI: Take control of your Git repositories.</h3>
+    </div>
+</section>
+{% endblock %}

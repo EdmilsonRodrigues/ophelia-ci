@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="p-section">
+    <hr class="p-rule">
+    <h3>{{ repository.name }}</h3>
+
+    <div class="p-section--shallow">
+        <p>{{ repository.description }}</p>
+    </div>
+    <div class="p-section--shallow">
+        Clone repo: <code>git clone {{ repository.clone_url }}</code>
+    </div>
+</section>
+{% endblock %}

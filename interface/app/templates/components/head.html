@@ -1,0 +1,8 @@
+<head>
+    <meta charset="UTF-8">
+    <link href="{{ url_for('static', path='/styles/styles.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla-framework-version-4.21.1.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block head_styles %}{% endblock %}
+    <title>{{ title }}</title>
+</head>

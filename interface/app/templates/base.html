@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'components/head.html' %}
+
+<body>
+    <div class="l-application" role="presentation">
+        {% include 'components/sidebar.html' %}
+        <main class="l-main">
+            <div class="p-panel">
+                <div class="p-panel__header">
+                    <h4 class="p-panel__title">{{ page_title }}</h4>
+                    {% if modal %}
+                    <div class="p-panel__controls">
+                        <button class="u-no-margin--bottom js-aside-open">{{ modal.title }}</button>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="p-panel__content">
+                    <div class="u-fixed-width">
+                        {% block content %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        {% if modal %}
+        {% include 'components/modal.html' %}
+        {% endif %}
+
+        <aside class="l-status">
+            <div class="p-panel demo-status">
+                <div class="u-fixed-width">
+                    {{ status }}
+                </div>
+            </div>
+        </aside>
+    </div>
+    <script src="{{ url_for('static', path='/scripts/script.js') }}"></script>
+    {% block page_scripts %}{% endblock %}
+</body>
+
+</html>

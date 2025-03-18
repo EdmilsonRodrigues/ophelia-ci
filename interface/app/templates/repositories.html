@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table aria-label="JAAS table example" class="p-main-table">
+    <thead>
+        <tr>
+            <th><span class="status-icon is-blocked">Current Projects</span></th>
+            <th colspan="5">description</th>
+            <th class="u-align--right">Last Updated</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for repo in repositories %}
+        <tr uuid="{{ repo.uuid }}">
+            <td class="" data-test-column="name">
+                <div><a href="/repositories/{{ repo.name }}">{{ repo.name }}</a></div>
+            </td>
+            <td colspan="5" class="" data-test-column="description">{{ repo.truncated_description }}</td>
+            <td class="u-align--right" data-test-column="updated">{{ repo.last_updated.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
