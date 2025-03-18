@@ -37,6 +37,7 @@ jobs:
         
       - name: Package Client Deb
         run: |
+          source .venv/bin/activate
           cd client
           make build
           make package_deb
