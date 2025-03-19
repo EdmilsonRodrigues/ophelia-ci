@@ -49,18 +49,20 @@ class Repository(BaseModel):
     def clone_url(self):
         return f'git@{str(Settings().GRPC_SERVER).rstrip("/")}:{self.name}.git'
 
-    @classmethod
-    def get_status(cls):
-        return cls.get_service().get_status()
-
     @staticmethod
     def convert_timestamp_to_datetime(timestamp: Timestamp) -> datetime:
         return timestamp.ToDatetime()
 
     @classmethod
-    def create(cls, name: str, description: str, gitignore: str):
+    def create(
+        cls,
+        name: str,
+        description: str,
+        gitignore: str,
+        metadata: tuple[tuple[str, str]],
+    ):
         response = cls.get_service().create_repository(
-            name, description, gitignore
+            name, description, gitignore, metadata=metadata
         )
         return cls(
             id=response.id,
@@ -70,8 +72,16 @@ class Repository(BaseModel):
         )
 
     @classmethod
-    def update(cls, id: str, name: str, description: str):
-        response = cls.get_service().update_repository(id, name, description)
+    def update(
+        cls,
+        id: str,
+        name: str,
+        description: str,
+        metadata: tuple[tuple[str, str]],
+    ):
+        response = cls.get_service().update_repository(
+            id, name, description, metadata=metadata
+        )
         return cls(
             id=response.id,
             name=response.name,
@@ -80,8 +90,8 @@ class Repository(BaseModel):
         )
 
     @classmethod
-    def get(cls, id: str):
-        response = cls.get_service().get_repository(id)
+    def get(cls, id: str, metadata: tuple[tuple[str, str]]):
+        response = cls.get_service().get_repository(id, metadata=metadata)
         return cls(
             id=response.id,
             name=response.name,
@@ -90,8 +100,8 @@ class Repository(BaseModel):
         )
 
     @classmethod
-    def get_by_name(cls, name: str):
-        response = cls.get_service().get_by_name(name)
+    def get_by_name(cls, name: str, metadata: tuple[tuple[str, str]]):
+        response = cls.get_service().get_by_name(name, metadata=metadata)
         return cls(
             id=response.id,
             name=response.name,
@@ -100,12 +110,12 @@ class Repository(BaseModel):
         )
 
     @classmethod
-    def delete(cls, id: str):
-        cls.get_service().delete_repository(id)
+    def delete(cls, id: str, metadata: tuple[tuple[str, str]]):
+        cls.get_service().delete_repository(id, metadata=metadata)
 
     @classmethod
-    def get_all(cls):
-        response_list = cls.get_service().get_repositories()
+    def get_all(cls, metadata: tuple[tuple[str, str]]):
+        response_list = cls.get_service().get_repositories(metadata=metadata)
         return [
             cls(
                 id=response.id,

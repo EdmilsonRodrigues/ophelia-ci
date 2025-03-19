@@ -1,6 +1,6 @@
 [project]
 name = "ophelia-ci-interface"
-version = "5.0.0"
+version = "0.5.0"
 description = "This is a Python project to create a web page interface for an Ophelia CI server."
 readme = "README.md"
 requires-python = ">=3.12, <3.13"
@@ -9,6 +9,7 @@ dependencies = [
     "grpcio>=1.71.0",
     "grpcio-tools>=1.71.0",
     "jinja2>=3.1.6",
+    "paramiko>=3.5.1",
     "pydantic-settings>=2.8.1",
     "pydantic[email]>=2.10.6",
     "types-protobuf>=5.29.1.20250315",

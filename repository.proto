@@ -5,15 +5,6 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
 
-service HealthService {
-    rpc Health(Empty) returns (HealthResponse);
-}
-
-message Empty {}
-message HealthResponse {
-    string status = 1;
-}
-
 service RepositoryService {
     rpc CreateRepository(CreateRepositoryRequest) returns (RepositoryResponse);
     rpc UpdateRepository(UpdateRepositoryRequest) returns (RepositoryResponse);
@@ -21,6 +12,8 @@ service RepositoryService {
     rpc GetRepository(GetRepositoryRequest) returns (RepositoryResponse);
     rpc DeleteRepository(DeleteRepositoryRequest) returns (Empty);
 }
+
+message Empty {}
 
 message GetRepositoryRequest {
     string id = 1;

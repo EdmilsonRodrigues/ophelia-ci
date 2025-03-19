@@ -53,6 +53,7 @@ jobs:
       
       - name: Install flatpak
         run: |
+          sudo apt-get update
           sudo apt-get install flatpak flatpak-builder
 
       - name: Build

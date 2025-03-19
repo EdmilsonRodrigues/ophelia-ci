@@ -86,7 +86,8 @@ function setupAppLayoutExamples() {
   }
 }
 
-function submitModal(modal_submit_id) {
+function submitModal(event, modal_submit_id) {
+  event.preventDefault();
   modalsMapping[modal_submit_id]();
 }
 

@@ -1,0 +1,67 @@
+syntax = "proto3";
+package ophelia;
+
+option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
+
+service AuthService {
+    rpc AuthenticationChallenge(AuthenticationChallengeRequest) returns (AuthenticationChallengeResponse);
+    rpc Authentication(AuthenticationRequest) returns (AuthenticationResponse);
+}
+
+message AuthenticationChallengeRequest {
+    string username = 1;
+}
+
+message AuthenticationChallengeResponse {
+    string challenge = 1;
+}
+
+message AuthenticationRequest {
+    string username = 1;
+    string challenge = 2;
+}
+
+message AuthenticationResponse {
+    bool authenticated = 1;
+    string token = 2;
+}
+
+service UserService {
+    rpc CreateUser(CreateUserRequest) returns (UserResponse);
+    rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
+    rpc ListUser(Empty) returns (ListUserResponse);
+    rpc GetUser(GetUserRequest) returns (UserResponse);
+    rpc DeleteUser(DeleteUserRequest) returns (Empty);
+}
+
+message Empty {}
+
+message GetUserRequest {
+    string id = 1;
+    string username = 2;
+}
+
+message CreateUserRequest {
+    string username = 1;
+    string privateKey = 2;
+}
+
+message UpdateUserRequest {
+    string id = 1;
+    string username = 2;
+    string privateKey = 3;
+}
+
+message UserResponse {
+    string id = 1;
+    string username = 2;
+}
+
+message ListUserResponse {
+    repeated UserResponse users = 1;
+}
+
+message DeleteUserRequest {
+    string id = 1;
+}
+
