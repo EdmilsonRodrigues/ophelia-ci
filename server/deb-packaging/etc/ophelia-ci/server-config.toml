@@ -1,2 +1,8 @@
 [server]
 port = 50051
+#  secret = "my secret"  # if this is not set a random one will be generated
+db_path = "/var/lib/ophelia/ophelia.db"
+
+# [ssl]  # Add if want to enable transactions through https
+# cert_file = "server.crt"  # Add if want to enable transactions through https
+# key_file = "server.key"  # Add if want to enable transactions through https

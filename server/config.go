@@ -4,16 +4,17 @@ import (
 	"os"
 
 	"github.com/pelletier/go-toml/v2"
-
 )
 
 type Config struct {
 	Server struct {
-		Port	int	`toml:"port"`
+		Port   int    `toml:"port"`
+		Secret string `toml:"secret"`
+		DBPath string `toml:"db_path"`
 	} `toml:"server"`
 	SSL struct {
-		CertFile 	string	`toml:"cert_file"`
-		KeyFile 	string	`toml:"key_file"`
+		CertFile string `toml:"cert_file"`
+		KeyFile  string `toml:"key_file"`
 	} `toml:"ssl"`
 }
 
