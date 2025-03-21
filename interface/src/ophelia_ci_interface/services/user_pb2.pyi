@@ -79,6 +79,21 @@ class AuthenticationResponse(google.protobuf.message.Message):
 global___AuthenticationResponse = AuthenticationResponse
 
 @typing.final
+class UniqueKeyLoginRequest(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    UNIQUEKEY_FIELD_NUMBER: builtins.int
+    uniqueKey: builtins.str
+    def __init__(
+        self,
+        *,
+        uniqueKey: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["uniqueKey", b"uniqueKey"]) -> None: ...
+
+global___UniqueKeyLoginRequest = UniqueKeyLoginRequest
+
+@typing.final
 class GetUserRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 

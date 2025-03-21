@@ -19,6 +19,7 @@ import (
 )
 
 var jwtSecret = getSecret()
+var uniqueKey = randomKey()
 
 func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	methodName := info.FullMethod
@@ -39,6 +40,10 @@ func getSecret() string {
 	if config.Server.Secret != "" {
 		return config.Server.Secret
 	}
+	return randomKey()
+}
+
+func randomKey() string {
 	secret := make([]byte, 32)
 	_, err := rand.Read(secret)
 	if err != nil {
@@ -105,6 +110,19 @@ func (s *server) Authentication(ctx context.Context, req *pb.AuthenticationReque
 	}
 
 	return &pb.AuthenticationResponse{Authenticated: true, Token: token}, nil
+}
+
+func (s *server) UniqueKeyLogin(ctx context.Context, req *pb.UniqueKeyLoginRequest) (*pb.AuthenticationResponse, error) {
+	log.Printf("UniqueKeyLogin with request: %v", req)
+	if uniqueKey != "" && req.UniqueKey == uniqueKey {
+		token, err := generateJWT(req.UniqueKey)
+		if err != nil {
+			return &pb.AuthenticationResponse{Authenticated: false}, err
+		}
+		uniqueKey = ""
+		return &pb.AuthenticationResponse{Authenticated: true, Token: token}, nil
+	}
+	return &pb.AuthenticationResponse{Authenticated: false}, nil
 }
 
 func verifySignature(storedKey ssh.PublicKey, challengeBytes, signatureBytes []byte) bool {

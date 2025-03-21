@@ -8,6 +8,7 @@ option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
 service AuthService {
     rpc AuthenticationChallenge(AuthenticationChallengeRequest) returns (AuthenticationChallengeResponse);
     rpc Authentication(AuthenticationRequest) returns (AuthenticationResponse);
+    rpc UniqueKeyLogin(UniqueKeyLoginRequest) returns (AuthenticationResponse);
 }
 
 message AuthenticationChallengeRequest {
@@ -26,6 +27,10 @@ message AuthenticationRequest {
 message AuthenticationResponse {
     bool authenticated = 1;
     string token = 2;
+}
+
+message UniqueKeyLoginRequest {
+    string uniqueKey = 1;
 }
 
 service UserService {
