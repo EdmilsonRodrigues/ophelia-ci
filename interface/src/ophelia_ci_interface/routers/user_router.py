@@ -21,6 +21,7 @@ router = APIRouter(prefix='/users', tags=['User'])
 users_modal = Modal(
     title='Create user',
     action='/users/',
+    method='POST',
     items=[
         ModalItem(
             id='user_username',
@@ -42,6 +43,7 @@ users_modal = Modal(
 user_modal = Modal(
     title='Update user',
     action='/users/{username}/',
+    method='PUT',
     items=[
         ModalItem(
             id='user_username',
@@ -117,7 +119,7 @@ def repository(
             'status': health_service.get_status(),
             'user': user,
             'id': user.id,
-            'modal': user_modal.format_action({'username': username}),
+            'modal': user_modal.format_action(username=username),
         },
     )
 

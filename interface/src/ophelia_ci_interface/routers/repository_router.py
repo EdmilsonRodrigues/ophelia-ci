@@ -136,7 +136,7 @@ def repository(
             'status': health_service.get_status(),
             'repository': repository,
             'id': repository.id,
-            'modal': repository_modal.format_action({'repo_name': repo_name}),
+            'modal': repository_modal.format_action(repo_name=repo_name),
         },
     )
 

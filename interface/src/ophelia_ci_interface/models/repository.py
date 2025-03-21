@@ -125,6 +125,10 @@ class Repository(BaseModel):
 
         :return: the clone URL
         """
+        if self._clone_url is None:
+            raise ValueError(
+                'Clone URL not generated. Call get_clone_url() first.'
+            )
         return self._clone_url
 
     @staticmethod

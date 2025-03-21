@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Literal, Self
 
 from pydantic import BaseModel
 
@@ -16,6 +16,7 @@ class ModalItem(BaseModel):
 class Modal(BaseModel):
     title: str
     action: str
+    method: Literal['POST', 'PUT', 'DELETE', 'GET']
     items: list[ModalItem] = []
     submit: str
     submit_id: str
