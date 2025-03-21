@@ -89,7 +89,7 @@ system_runtime_requires = [
 
 [tool.briefcase.app.ophelia-ci-interface.linux.flatpak]
 flatpak_runtime = "org.freedesktop.Platform"
-flatpak_runtime_version = "24.08"
+flatpak_runtime_version = "0.6.0"
 flatpak_sdk = "org.freedesktop.Sdk"
 
 [tool.briefcase.app.ophelia-ci-interface.windows]

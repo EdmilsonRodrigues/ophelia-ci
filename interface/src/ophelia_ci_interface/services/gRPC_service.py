@@ -13,6 +13,15 @@ import paramiko
 
 
 class ServiceMixin[T]:
+    """
+    Mixin class for gRPC services. Implements the context manager protocol.
+    The context manager is used to open and close the gRPC channel.
+
+
+    :param server: the server address
+    :param stub_class: the stub class
+    :param stub: the stub instance
+    """
     server: str
     stub_class: type[T]
     stub: T
@@ -34,9 +43,22 @@ class ServiceMixin[T]:
 
 
 class HealthService(ServiceMixin):
+    """
+    Health service for checking the status of the server.
+
+    :param server: the server address
+    :param stub_class: the stub class
+    :param stub: the stub instance
+    """
     stub_class = health_pb2_grpc.HealthServiceStub
 
     def get_status(self) -> str:
+        """
+        Check the status of the server by invoking the Health RPC.
+
+        :return: 'Connected' if the server responds successfully,
+                otherwise 'Failed Connecting' if an exception occurs.
+        """
         with self:
             try:
                 self.stub.Health(common_pb2.Empty())
@@ -49,6 +71,13 @@ class RepositoryService(ServiceMixin):
     stub_class = repository_pb2_grpc.RepositoryServiceStub
 
     def get_repositories(self, metadata: tuple[tuple[str, str]]):
+        """
+        Retrieve a list of all repositories from the database.
+
+        :param metadata: The metadata for the request.
+        :return: A response containing a list of repositories.
+        """
+
         with self:
             response_list = self.stub.ListRepository(
                 common_pb2.Empty(), metadata=metadata
@@ -62,6 +91,16 @@ class RepositoryService(ServiceMixin):
         gitignore: str,
         metadata: tuple[tuple[str, str]],
     ):
+        """
+        Create a new repository in the database.
+
+        :param name: the name of the repository
+        :param description: the description of the repository
+        :param gitignore: the main language of the repository, to be used for
+            the base gitignore
+        :param metadata: the metadata of the request
+        :return: the newly created repository
+        """
         with self:
             response_create = self.stub.CreateRepository(
                 repository_pb2.CreateRepositoryRequest(
@@ -80,6 +119,15 @@ class RepositoryService(ServiceMixin):
         description: str,
         metadata: tuple[tuple[str, str]],
     ):
+        """
+        Update an existing repository in the database.
+
+        :param id: the ID of the repository
+        :param name: the name of the repository
+        :param description: the description of the repository
+        :param metadata: the metadata of the request
+        :return: the updated repository
+        """
         with self:
             response_update = self.stub.UpdateRepository(
                 repository_pb2.UpdateRepositoryRequest(
@@ -92,6 +140,14 @@ class RepositoryService(ServiceMixin):
         return response_update
 
     def get_repository(self, id: str, metadata: tuple[tuple[str, str]]):
+        """
+        Retrieve a repository by its ID from the database.
+
+        :param id: the ID of the repository
+        :param metadata: the metadata for the request
+        :return: the retrieved repository
+        """
+
         with self:
             response_get = self.stub.GetRepository(
                 repository_pb2.GetRepositoryRequest(id=id), metadata=metadata
@@ -99,6 +155,13 @@ class RepositoryService(ServiceMixin):
         return response_get
 
     def get_by_name(self, name: str, metadata: tuple[tuple[str, str]]):
+        """
+        Retrieve a repository by its name from the database.
+
+        :param name: The name of the repository to retrieve.
+        :param metadata: The metadata of the request.
+        :return: The repository response from the database.
+        """
         with self:
             response_get = self.stub.GetRepository(
                 repository_pb2.GetRepositoryRequest(name=name),
@@ -107,6 +170,13 @@ class RepositoryService(ServiceMixin):
         return response_get
 
     def delete_repository(self, id: str, metadata: tuple[tuple[str, str]]):
+        """
+        Delete an existing repository from the database.
+
+        :param id: the id of the repository
+        :param metadata: the metadata of the request
+        :return: the deleted repository
+        """
         with self:
             response_delete = self.stub.DeleteRepository(
                 repository_pb2.DeleteRepositoryRequest(id=id),
@@ -118,7 +188,15 @@ class RepositoryService(ServiceMixin):
 class AuthenticationService(ServiceMixin):
     stub_class = user_pb2_grpc.AuthServiceStub
 
-    def authenticate(self, username: str, private_key: str):
+    def authenticate(self, username: str, private_key: str) -> str:
+        """
+        Authenticate a user with their username and private key.
+
+        :param username: the username of the user
+        :param private_key: the private key of the user
+        :return: the token of the user if the authentication is successful
+        :raises Exception: if the authentication failed
+        """
         with self:
             challenge = self.request_challenge(username)
             private_key_obj = paramiko.RSAKey(
@@ -138,10 +216,32 @@ class AuthenticationService(ServiceMixin):
             raise Exception('Authentication failed')
 
     def request_challenge(self, username: str):
+        """
+        Requests a challenge from the server to be signed by the user.
+
+        :param username: the username of the user
+        :return: the challenge to be signed
+        """
         response_challenge = self.stub.AuthenticationChallenge(
             user_pb2.AuthenticationChallengeRequest(username=username)
         )
         return response_challenge
+
+    def authenticate_with_unique_key(self, unique_key: str):
+        """
+        Authenticate a user with their unique key.
+
+        :param unique_key: the unique key of the user
+        :return: the token of the user if the authentication is successful
+        :raises Exception: if the authentication failed
+        """
+        with self:
+            response_auth = self.stub.UniqueKeyLogin(
+                user_pb2.UniqueKeyLoginRequest(uniqueKey=unique_key)
+            )
+            if response_auth.authenticated:
+                return response_auth.token
+            raise Exception('Authentication failed')
 
 
 class UserService(ServiceMixin):
@@ -150,6 +250,14 @@ class UserService(ServiceMixin):
     def create_user(
         self, username: str, public_key: str, metadata: tuple[tuple[str, str]]
     ):
+        """
+        Create a new user in the database.
+
+        :param username: the username of the user
+        :param public_key: the public key of the user
+        :param metadata: the metadata of the request
+        :return: the newly created user
+        """
         with self:
             response_create = self.stub.CreateUser(
                 user_pb2.CreateUserRequest(
@@ -161,6 +269,13 @@ class UserService(ServiceMixin):
         return response_create
 
     def get_user(self, id: str, metadata: tuple[tuple[str, str]]):
+        """
+        Get a user from the database by its id.
+
+        :param id: the id of the user
+        :param metadata: the metadata of the request
+        :return: the user
+        """
         with self:
             response_get = self.stub.GetUser(
                 user_pb2.GetUserRequest(id=id), metadata=metadata
@@ -170,6 +285,13 @@ class UserService(ServiceMixin):
     def get_user_by_username(
         self, username: str, metadata: tuple[tuple[str, str]]
     ):
+        """
+        Get a user from the database by its username.
+
+        :param username: the username of the user
+        :param metadata: the metadata of the request
+        :return: the user
+        """
         with self:
             response_get = self.stub.GetUser(
                 user_pb2.GetUserRequest(username=username), metadata=metadata
@@ -177,6 +299,13 @@ class UserService(ServiceMixin):
         return response_get
 
     def get_users(self, metadata: tuple[tuple[str, str]]):
+        """
+        Retrieve all users from the database.
+
+        :param metadata: The metadata for the request.
+        :return: A response containing a list of users.
+        """
+
         with self:
             response_get = self.stub.ListUser(
                 common_pb2.Empty(), metadata=metadata
@@ -190,6 +319,15 @@ class UserService(ServiceMixin):
         public_key: str,
         metadata: tuple[tuple[str, str]],
     ):
+        """
+        Update an existing user in the database.
+
+        :param id: the id of the user
+        :param username: the username of the user
+        :param public_key: the public key of the user
+        :param metadata: the metadata of the request
+        :return: the updated user
+        """
         with self:
             response_update = self.stub.UpdateUser(
                 user_pb2.UpdateUserRequest(
@@ -202,6 +340,13 @@ class UserService(ServiceMixin):
         return response_update
 
     def delete_user(self, id: str, metadata: tuple[tuple[str, str]]):
+        """
+        Delete an existing user from the database.
+
+        :param id: the id of the user
+        :param metadata: the metadata of the request
+        :return: the deleted user
+        """
         with self:
             response_delete = self.stub.DeleteUser(
                 user_pb2.DeleteUserRequest(id=id), metadata=metadata

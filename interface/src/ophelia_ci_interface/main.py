@@ -1,12 +1,12 @@
-from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from ophelia_ci_interface.config import VERSION
+from ophelia_ci_interface.config import VERSION, base_path
 from ophelia_ci_interface.routers.dependencies import Health, Template
+from ophelia_ci_interface.routers.authentication_router import router as authentication_router
 from ophelia_ci_interface.routers.repository_router import (
     router as repository_router,
 )
@@ -15,12 +15,21 @@ from ophelia_ci_interface.routers.user_router import router as user_router
 app = FastAPI(version=VERSION)
 app.mount(
     '/static',
-    StaticFiles(directory=Path('resources', 'static')),
+    StaticFiles(directory=base_path / 'resources' / 'static'),
     name='static',
 )
 
+app.include_router(authentication_router)
 app.include_router(repository_router)
 app.include_router(user_router)
+
+
+@app.middleware("http")
+async def redirect_401(request: Request, call_next):
+    response = await call_next(request)
+    if response.status_code == 401:
+        return RedirectResponse(url="/login")
+    return response
 
 
 @app.get('/health', tags=['Common'])

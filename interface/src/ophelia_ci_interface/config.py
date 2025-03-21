@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-VERSION = '0.0.1'
+VERSION = '0.6.0'
 GITIGNORE_OPTIONS = ['None', 'python', 'go']
 
 
@@ -16,3 +16,10 @@ class Settings(BaseSettings):
     SSL_KEYFILE: Path | None = None
     SSL_CERTFILE: Path | None = None
     WORKERS: int | None = None
+
+
+base_path = (
+    Path('ophelia_ci_interface')
+    if Settings().DEBUG
+    else Path('/usr/lib/ophelia-ci-interface/app/ophelia_ci_interface')
+)

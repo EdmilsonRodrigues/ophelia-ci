@@ -1,10 +1,9 @@
 from functools import cache
-from pathlib import Path
 from typing import Annotated
 
 from fastapi import Cookie, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
-from ophelia_ci_interface.config import Settings
+from ophelia_ci_interface.config import Settings, base_path
 from ophelia_ci_interface.models.generals import MetadataTuple
 from ophelia_ci_interface.services.gRPC_service import (
     AuthenticationService,
@@ -38,7 +37,7 @@ def repository_service(settings: SettingsDependency) -> RepositoryService:
 
 @cache
 def template_dependency() -> Jinja2Templates:
-    return Jinja2Templates(directory=Path('resources', 'templates'))
+    return Jinja2Templates(directory=base_path / 'resources' / 'templates')
 
 
 def user_service(settings: SettingsDependency) -> UserService:

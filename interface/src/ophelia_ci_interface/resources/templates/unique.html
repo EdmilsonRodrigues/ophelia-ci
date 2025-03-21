@@ -3,13 +3,20 @@
 {% include 'components/head.html' %}
 
 <body>
-    <h1>Unique Key Login</h1>
-    <form method="post" action="/unique">
-        <label for="unique_key">Unique Key</label>
-        <input type="password" id="unique_key" name="unique_key" placeholder="edmilsonrodrigues"
-            autocomplete="off">
-        <button type="submit" name="submit">Login</button>
-    </form>
+    <br>
+    <div class="row">
+        <div class="col-5">
+            <div class="p-card">
+                <h1>Unique Key Login</h1>
+                <form method="post" action="/unique">
+                    <label for="unique_key">Unique Key</label>
+                    <input type="password" id="unique_key" name="unique_key"
+                        autocomplete="off">
+                    <button type="submit" name="submit">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
