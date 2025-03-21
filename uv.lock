@@ -610,6 +610,19 @@ wheels = [
 ]
 
 [[package]]
+name = "mypy-protobuf"
+version = "3.6.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "protobuf" },
+    { name = "types-protobuf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4d/6f/282d64d66bf48ce60e38a6560753f784e0f88ab245ac2fb5e93f701a36cd/mypy-protobuf-3.6.0.tar.gz", hash = "sha256:02f242eb3409f66889f2b1a3aa58356ec4d909cdd0f93115622e9e70366eca3c", size = 24445 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/73/d6b999782ae22f16971cc05378b3b33f6a89ede3b9619e8366aa23484bca/mypy_protobuf-3.6.0-py3-none-any.whl", hash = "sha256:56176e4d569070e7350ea620262478b49b7efceba4103d468448f1d21492fd6c", size = 16434 },
+]
+
+[[package]]
 name = "ophelia-ci-interface"
 version = "0.5.0"
 source = { virtual = "." }
@@ -619,16 +632,19 @@ dependencies = [
     { name = "grpcio-tools" },
     { name = "jinja2" },
     { name = "paramiko" },
+    { name = "protobuf" },
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-settings" },
+    { name = "redis" },
     { name = "types-protobuf" },
-    { name = "uvicorn" },
+    { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.dev-dependencies]
 dev = [
     { name = "briefcase" },
     { name = "mypy" },
+    { name = "mypy-protobuf" },
     { name = "ruff" },
 ]
 test = [
@@ -644,16 +660,19 @@ requires-dist = [
     { name = "grpcio-tools", specifier = ">=1.71.0" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "paramiko", specifier = ">=3.5.1" },
+    { name = "protobuf", specifier = ">=5.29.3" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.10.6" },
     { name = "pydantic-settings", specifier = ">=2.8.1" },
+    { name = "redis", specifier = ">=5.2.1" },
     { name = "types-protobuf", specifier = ">=5.29.1.20250315" },
-    { name = "uvicorn", specifier = ">=0.34.0" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "briefcase", specifier = ">=0.3.22" },
     { name = "mypy", specifier = ">=1.15.0" },
+    { name = "mypy-protobuf", specifier = ">=3.6.0" },
     { name = "ruff", specifier = ">=0.11.0" },
 ]
 test = [
@@ -976,6 +995,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/c9/1f/4f998c900485e5c0ef43838363ba4a9723ac0ad73a9dc42068b12aaba4e4/PyYAML-6.0.2-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:8b9c7197f7cb2738065c481a0461e50ad02f18c78cd75775628afb4d7137fb3b", size = 756611 },
     { url = "https://files.pythonhosted.org/packages/df/d1/f5a275fdb252768b7a11ec63585bc38d0e87c9e05668a139fea92b80634c/PyYAML-6.0.2-cp312-cp312-win32.whl", hash = "sha256:ef6107725bd54b262d6dedcc2af448a266975032bc85ef0172c5f059da6325b4", size = 140591 },
     { url = "https://files.pythonhosted.org/packages/0c/e8/4f648c598b17c3d06e8753d7d13d57542b30d56e6c2dedf9c331ae56312e/PyYAML-6.0.2-cp312-cp312-win_amd64.whl", hash = "sha256:7e7401d0de89a9a855c839bc697c079a4af81cf878373abd7dc625847d25cbd8", size = 156338 },
+]
+
+[[package]]
+name = "redis"
+version = "5.2.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/47/da/d283a37303a995cd36f8b92db85135153dc4f7a8e4441aa827721b442cfb/redis-5.2.1.tar.gz", hash = "sha256:16f2e22dff21d5125e8481515e386711a34cbec50f0e44413dd7d9c060a54e0f", size = 4608355 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3c/5f/fa26b9b2672cbe30e07d9a5bdf39cf16e3b80b42916757c5f92bca88e4ba/redis-5.2.1-py3-none-any.whl", hash = "sha256:ee7e1056b9aea0f04c6c2ed59452947f34c4940ee025f5dd83e6a6418b6989e4", size = 261502 },
 ]
 
 [[package]]

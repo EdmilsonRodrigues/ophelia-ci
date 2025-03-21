@@ -1,5 +1,7 @@
 syntax = "proto3";
-package ophelia;
+package user;
+
+import "common.proto";
 
 option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
 
@@ -29,12 +31,10 @@ message AuthenticationResponse {
 service UserService {
     rpc CreateUser(CreateUserRequest) returns (UserResponse);
     rpc UpdateUser(UpdateUserRequest) returns (UserResponse);
-    rpc ListUser(Empty) returns (ListUserResponse);
+    rpc ListUser(common.Empty) returns (ListUserResponse);
     rpc GetUser(GetUserRequest) returns (UserResponse);
-    rpc DeleteUser(DeleteUserRequest) returns (Empty);
+    rpc DeleteUser(DeleteUserRequest) returns (common.Empty);
 }
-
-message Empty {}
 
 message GetUserRequest {
     string id = 1;
@@ -43,13 +43,13 @@ message GetUserRequest {
 
 message CreateUserRequest {
     string username = 1;
-    string privateKey = 2;
+    string publicKey = 2;
 }
 
 message UpdateUserRequest {
     string id = 1;
     string username = 2;
-    string privateKey = 3;
+    string publicKey = 3;
 }
 
 message UserResponse {

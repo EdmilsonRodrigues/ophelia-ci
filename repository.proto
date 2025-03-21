@@ -1,19 +1,18 @@
 syntax = "proto3";
-package ophelia;
+package repository;
 
 import "google/protobuf/timestamp.proto";
+import "common.proto";
 
 option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
 
 service RepositoryService {
     rpc CreateRepository(CreateRepositoryRequest) returns (RepositoryResponse);
     rpc UpdateRepository(UpdateRepositoryRequest) returns (RepositoryResponse);
-    rpc ListRepository(Empty) returns (ListRepositoryResponse);
+    rpc ListRepository(common.Empty) returns (ListRepositoryResponse);
     rpc GetRepository(GetRepositoryRequest) returns (RepositoryResponse);
-    rpc DeleteRepository(DeleteRepositoryRequest) returns (Empty);
+    rpc DeleteRepository(DeleteRepositoryRequest) returns (common.Empty);
 }
-
-message Empty {}
 
 message GetRepositoryRequest {
     string id = 1;

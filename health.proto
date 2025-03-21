@@ -1,10 +1,10 @@
 syntax = "proto3";
-package ophelia;
+package health;
+
+import "common.proto";
 
 option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
 
 service HealthService {
-    rpc Health(Empty) returns (Empty);
+    rpc Health(common.Empty) returns (common.Empty);
 }
-
-message Empty {}

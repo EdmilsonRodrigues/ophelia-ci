@@ -10,10 +10,12 @@ dependencies = [
     "grpcio-tools>=1.71.0",
     "jinja2>=3.1.6",
     "paramiko>=3.5.1",
+    "protobuf>=5.29.3",
     "pydantic-settings>=2.8.1",
     "pydantic[email]>=2.10.6",
+    "redis>=5.2.1",
     "types-protobuf>=5.29.1.20250315",
-    "uvicorn>=0.34.0",
+    "uvicorn[standard]>=0.34.0",
 ]
 
 [dependency-groups]
@@ -25,13 +27,14 @@ test = [
 dev = [
     "briefcase>=0.3.22",
     "mypy>=1.15.0",
+    "mypy-protobuf>=3.6.0",
     "ruff>=0.11.0",
 ]
 
 [tool.ruff]
 preview = true
 line-length = 79
-exclude = ["app/services/repository_pb2.py", "app/services/repository_pb2_grpc.py"]
+exclude = ["*_pb2*"]
 
 [tool.ruff.format]
 quote-style = "single"
@@ -45,4 +48,7 @@ preview = true
 select = ["I", "UP", "F", "E", "W"]
 
 [tool.mypy]
-exclude = 'repository_pb2.py|repository_pb2_grpc.py'
+files = ["src", "tests"]
+exclude = [
+    '__main__\.py',
+]

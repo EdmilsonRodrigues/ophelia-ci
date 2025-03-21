@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_AuthenticationChallenge_FullMethodName = "/ophelia.AuthService/AuthenticationChallenge"
-	AuthService_Authentication_FullMethodName          = "/ophelia.AuthService/Authentication"
+	AuthService_AuthenticationChallenge_FullMethodName = "/user.AuthService/AuthenticationChallenge"
+	AuthService_Authentication_FullMethodName          = "/user.AuthService/Authentication"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -142,7 +142,7 @@ func _AuthService_Authentication_Handler(srv interface{}, ctx context.Context, d
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ophelia.AuthService",
+	ServiceName: "user.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -159,11 +159,11 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	UserService_CreateUser_FullMethodName = "/ophelia.UserService/CreateUser"
-	UserService_UpdateUser_FullMethodName = "/ophelia.UserService/UpdateUser"
-	UserService_ListUser_FullMethodName   = "/ophelia.UserService/ListUser"
-	UserService_GetUser_FullMethodName    = "/ophelia.UserService/GetUser"
-	UserService_DeleteUser_FullMethodName = "/ophelia.UserService/DeleteUser"
+	UserService_CreateUser_FullMethodName = "/user.UserService/CreateUser"
+	UserService_UpdateUser_FullMethodName = "/user.UserService/UpdateUser"
+	UserService_ListUser_FullMethodName   = "/user.UserService/ListUser"
+	UserService_GetUser_FullMethodName    = "/user.UserService/GetUser"
+	UserService_DeleteUser_FullMethodName = "/user.UserService/DeleteUser"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -384,7 +384,7 @@ func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ophelia.UserService",
+	ServiceName: "user.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

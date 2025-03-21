@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	RepositoryService_CreateRepository_FullMethodName = "/ophelia.RepositoryService/CreateRepository"
-	RepositoryService_UpdateRepository_FullMethodName = "/ophelia.RepositoryService/UpdateRepository"
-	RepositoryService_ListRepository_FullMethodName   = "/ophelia.RepositoryService/ListRepository"
-	RepositoryService_GetRepository_FullMethodName    = "/ophelia.RepositoryService/GetRepository"
-	RepositoryService_DeleteRepository_FullMethodName = "/ophelia.RepositoryService/DeleteRepository"
+	RepositoryService_CreateRepository_FullMethodName = "/repository.RepositoryService/CreateRepository"
+	RepositoryService_UpdateRepository_FullMethodName = "/repository.RepositoryService/UpdateRepository"
+	RepositoryService_ListRepository_FullMethodName   = "/repository.RepositoryService/ListRepository"
+	RepositoryService_GetRepository_FullMethodName    = "/repository.RepositoryService/GetRepository"
+	RepositoryService_DeleteRepository_FullMethodName = "/repository.RepositoryService/DeleteRepository"
 )
 
 // RepositoryServiceClient is the client API for RepositoryService service.
@@ -244,7 +244,7 @@ func _RepositoryService_DeleteRepository_Handler(srv interface{}, ctx context.Co
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var RepositoryService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ophelia.RepositoryService",
+	ServiceName: "repository.RepositoryService",
 	HandlerType: (*RepositoryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

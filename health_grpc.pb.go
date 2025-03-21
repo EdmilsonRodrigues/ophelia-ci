@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	HealthService_Health_FullMethodName = "/ophelia.HealthService/Health"
+	HealthService_Health_FullMethodName = "/health.HealthService/Health"
 )
 
 // HealthServiceClient is the client API for HealthService service.
@@ -108,7 +108,7 @@ func _HealthService_Health_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var HealthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ophelia.HealthService",
+	ServiceName: "health.HealthService",
 	HandlerType: (*HealthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
