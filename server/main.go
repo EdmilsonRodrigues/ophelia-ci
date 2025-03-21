@@ -72,6 +72,7 @@ func main() {
 	pb.RegisterAuthServiceServer(s, mainServer)
 	pb.RegisterHealthServiceServer(s, mainServer)
 	log.Printf("Listening on port %d\n", config.Server.Port)
+	log.Printf("For logging in for the first time, use the following key: %v", uniqueKey)
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)

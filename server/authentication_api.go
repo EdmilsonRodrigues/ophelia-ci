@@ -18,8 +18,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var jwtSecret = getSecret()
-var uniqueKey = randomKey()
+var (
+	jwtSecret = getSecret()
+	uniqueKey = randomKey()
+)
+const (
+	uniqueKeyExpirationDays = 1
+)
 
 func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	methodName := info.FullMethod
@@ -66,6 +71,7 @@ func (s *server) AuthenticationChallange(ctx context.Context, req *pb.Authentica
 }
 
 func (s *server) Authentication(ctx context.Context, req *pb.AuthenticationRequest) (response *pb.AuthenticationResponse, err error) {
+	config := LoadConfig()
 	log.Printf("Authentication with request: %v", req)
 	response = &pb.AuthenticationResponse{Authenticated: false}
 	storedChallenge, ok := s.challenges.Load(req.Username)
@@ -104,7 +110,7 @@ func (s *server) Authentication(ctx context.Context, req *pb.AuthenticationReque
 		return
 	}
 
-	token, err := generateJWT(req.Username)
+	token, err := generateJWT(req.Username, config.Server.ExpirationTime)
 	if err != nil {
 		return &pb.AuthenticationResponse{Authenticated: false}, err
 	}
@@ -115,7 +121,7 @@ func (s *server) Authentication(ctx context.Context, req *pb.AuthenticationReque
 func (s *server) UniqueKeyLogin(ctx context.Context, req *pb.UniqueKeyLoginRequest) (*pb.AuthenticationResponse, error) {
 	log.Printf("UniqueKeyLogin with request: %v", req)
 	if uniqueKey != "" && req.UniqueKey == uniqueKey {
-		token, err := generateJWT(req.UniqueKey)
+		token, err := generateJWT(req.UniqueKey, uniqueKeyExpirationDays)
 		if err != nil {
 			return &pb.AuthenticationResponse{Authenticated: false}, err
 		}
@@ -143,10 +149,10 @@ func verifySignature(storedKey ssh.PublicKey, challengeBytes, signatureBytes []b
 	return true
 }
 
-func generateJWT(username string) (string, error) {
+func generateJWT(username string, expirationDays int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+		"exp":      time.Now().Add(time.Hour * 24 * time.Duration(expirationDays)).Unix(),
 	})
 	return token.SignedString(jwtSecret)
 }

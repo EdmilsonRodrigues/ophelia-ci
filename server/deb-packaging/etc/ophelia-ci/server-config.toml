@@ -2,6 +2,7 @@
 port = 50051
 #  secret = "my secret"  # if this is not set a random one will be generated
 db_path = "/var/lib/ophelia/ophelia.db"
+expiration_time = 30  # The time in days for the expiration token of the clients (integer)
 
 # [ssl]  # Add if want to enable transactions through https
 # cert_file = "server.crt"  # Add if want to enable transactions through https

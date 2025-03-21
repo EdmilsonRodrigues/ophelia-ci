@@ -10,12 +10,15 @@ author_email = "edmilson.monteiro.rodrigues@gmail.com"
 
 requires = [
     "fastapi[all]>=0.115.11",
+    "grpcio>=1.71.0",
     "grpcio-tools>=1.71.0",
     "jinja2>=3.1.6",
+    "paramiko>=3.5.1",
+    "protobuf>=5.29.3",
     "pydantic-settings>=2.8.1",
     "pydantic[email]>=2.10.6",
     "types-protobuf>=5.29.1.20250315",
-    "uvicorn>=0.34.0",    
+    "uvicorn[standard]>=0.34.0",
 ]
 
 [tool.briefcase.app.ophelia-ci-interface]
@@ -110,4 +113,3 @@ requires = [
 requires = [
     # Add your web-specific app requirements here
 ]
-

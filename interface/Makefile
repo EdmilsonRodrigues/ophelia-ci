@@ -12,6 +12,7 @@ run:
 	OPHELIA_CI_DEBUG=True uvicorn ophelia_ci_interface.main:app --reload
 
 build:
+	./fix_pyproject.bash
 	briefcase create
 	briefcase build
 	briefcase package
@@ -20,6 +21,7 @@ build:
 	mv dist/* ../dist
 
 build-deb:
+	./fix_pyproject.bash
 	briefcase create
 	briefcase build
 	briefcase package

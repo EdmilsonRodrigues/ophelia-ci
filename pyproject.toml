@@ -13,7 +13,6 @@ dependencies = [
     "protobuf>=5.29.3",
     "pydantic-settings>=2.8.1",
     "pydantic[email]>=2.10.6",
-    "redis>=5.2.1",
     "types-protobuf>=5.29.1.20250315",
     "uvicorn[standard]>=0.34.0",
 ]
