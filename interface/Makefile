@@ -5,7 +5,7 @@ lint:
 	ruff format
 
 mypy:
-	mypy .
+	mypy
 
 run:
 	cd src && \

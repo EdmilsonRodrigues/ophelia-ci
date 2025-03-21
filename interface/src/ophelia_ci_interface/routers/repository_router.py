@@ -1,21 +1,28 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Request, status
+from fastapi import APIRouter, Body, Path, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from ophelia_ci_interface.config import GITIGNORE_OPTIONS
 from ophelia_ci_interface.models.generals import Modal, ModalItem
-from ophelia_ci_interface.models.health import HealthService
 from ophelia_ci_interface.models.repository import (
     CreateRepositoryRequest,
     Repository,
     UpdateRepositoryRequest,
 )
-from ophelia_ci_interface.routers.dependencies import Template
+from ophelia_ci_interface.routers.dependencies import (
+    Health,
+    Metadata,
+    RepositoryDependency,
+    SettingsDependency,
+    Template,
+)
 
 router = APIRouter(prefix='/repositories', tags=['Repository'])
 
 repositories_modal = Modal(
     title='Create repository',
+    action='/repositories/',
+    method='POST',
     items=[
         ModalItem(
             id='repository_name',
@@ -42,6 +49,8 @@ repositories_modal = Modal(
 
 repository_modal = Modal(
     title='Update repository',
+    action='/repositories/{repo_name}',
+    method='PUT',
     items=[
         ModalItem(
             id='repository_name',
@@ -62,7 +71,13 @@ repository_modal = Modal(
 
 
 @router.get('/', response_class=HTMLResponse)
-def repositories(request: Request, template: Template):
+def repositories(
+    request: Request,
+    template: Template,
+    health_service: Health,
+    metadata: Metadata,
+    repository_service: RepositoryDependency,
+):
     return template.TemplateResponse(
         'repositories.html',
         {
@@ -70,49 +85,89 @@ def repositories(request: Request, template: Template):
             'title': 'Repositories - Ophelia CI',
             'page_title': 'Your repositories',
             'modal': repositories_modal,
-            'status': HealthService.get_status(),
-            'repositories': Repository.get_all(metadata=metadata),
+            'status': health_service.get_status(),
+            'repositories': Repository.get_all(
+                repository_service, metadata=metadata
+            ),
         },
     )
 
 
 @router.post('/', response_class=HTMLResponse)
 def create_repository(
-    request: Request, body: CreateRepositoryRequest, template: Template
+    repository_service: RepositoryDependency,
+    body: CreateRepositoryRequest,
+    template: Template,
+    health_service: Health,
+    metadata: Metadata,
 ):
     Repository.create(
-        body.name, body.description, body.gitignore, metadata=metadata
+        repository_service,
+        body.repository_name,
+        body.repository_description,
+        body.repository_gitignore,
+        metadata=metadata,
     )
 
 
 @router.get('/{repo_name}', response_class=HTMLResponse)
-def repository(request: Request, repo_name: str, template: Template):
-    repository = Repository.get_by_name(repo_name, metadata=metadata)
+def repository(
+    request: Request,
+    settings: SettingsDependency,
+    repository_service: RepositoryDependency,
+    template: Template,
+    health_service: Health,
+    metadata: Metadata,
+    repo_name: Annotated[
+        str,
+        Path(
+            title='Repository Name', description='The name of the repository'
+        ),
+    ],
+):
+    repository = Repository.get_by_name(
+        settings, repository_service, repo_name, metadata=metadata
+    )
     return template.TemplateResponse(
         'repository.html',
         {
             'request': request,
             'repo_name': repo_name,
-            'status': HealthService.get_status(),
+            'status': health_service.get_status(),
             'repository': repository,
             'id': repository.id,
-            'modal': repository_modal,
+            'modal': repository_modal.format_action({'repo_name': repo_name}),
         },
     )
 
 
 @router.put('/{repo_name}', status_code=204)
 def update_repository(
-    request: Request, body: UpdateRepositoryRequest, template: Template
+    repository_service: RepositoryDependency,
+    body: UpdateRepositoryRequest,
+    template: Template,
+    health_service: Health,
+    metadata: Metadata,
 ):
-    Repository.update(body.id, body.name, body.description, metadata=metadata)
+    Repository.update(
+        repository_service,
+        str(body.id),
+        body.repository_name,
+        body.repository_description,
+        metadata=metadata,
+    )
 
 
 @router.delete('/{repo_name}', response_class=RedirectResponse)
 def delete_repository(
-    request: Request, id: Annotated[str, Body(embed=True)], template: Template
+    request: Request,
+    repository_service: RepositoryDependency,
+    id: Annotated[str, Body(embed=True)],
+    template: Template,
+    health_service: Health,
+    metadata: Metadata,
 ):
-    Repository.delete(id, metadata=metadata)
+    Repository.delete(repository_service, id, metadata=metadata)
     return RedirectResponse(
         url=request.url_for('repositories'),
         status_code=status.HTTP_303_SEE_OTHER,

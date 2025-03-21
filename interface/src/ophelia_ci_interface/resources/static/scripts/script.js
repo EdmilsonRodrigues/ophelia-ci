@@ -3,10 +3,10 @@
   This is for demo purposes only. Real applications should implement it within their application code.
 */
 
-const modalsMapping = {
-  'repository-create': createRepositoryFromModal,
-  'repository-update': updateRepositoryFromModal,
-}
+// const modalsMapping = {
+//   'repository-create': createRepositoryFromModal,
+//   'repository-update': updateRepositoryFromModal,
+// }
 
 function setupAppLayoutExamples() {
   var aside = document.querySelector('.l-aside');
@@ -85,69 +85,5 @@ function setupAppLayoutExamples() {
     });
   }
 }
-
-function submitModal(event, modal_submit_id) {
-  event.preventDefault();
-  modalsMapping[modal_submit_id]();
-}
-
-function createRequestFromModal() {
-  const inputs = document.querySelectorAll('.p-form__group row input');
-  const selects = document.querySelectorAll('.p-form__group row select');
-  const request = {};
-  for (const input of inputs) {
-    request[input.id] = input.value;
-  }
-  for (const select of selects) {
-    request[select.id] = select.value;
-  }
-  return request;
-}
-
-
-function createRepositoryFromModal() {
-  const request = createRequestFromModal();
-  fetch('/repositories', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(request)
-  })
-    .then(() => window.location.reload())
-}
-
-function updateRepositoryFromModal() {
-  const request = createRequestFromModal();
-  const id = document.querySelector('#repository-section').attributes['data-id'];
-  request.id = id;
-  fetch(`/repositories/${request.repository_name}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(request)
-  })
-    .then(() => window.location.reload())
-}
-
-
-function deleteRepository(id, name) {
-  fetch(`/repositories/${name}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ id: id })
-  })
-    .then(response => {
-      if (response.ok) {
-        window.location.href = response.headers.get('Location');
-      } else {
-        console.error('Error deleting repository');
-      }
-    })
-}
-
 
 setupAppLayoutExamples();

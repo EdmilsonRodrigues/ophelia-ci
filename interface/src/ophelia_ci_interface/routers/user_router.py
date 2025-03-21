@@ -1,21 +1,26 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Request, status
+from fastapi import APIRouter, Body, Path, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from ophelia_ci_interface.models.generals import Modal, ModalItem
-from ophelia_ci_interface.models.health import HealthService
 from ophelia_ci_interface.models.user import (
     CreateUserRequest,
     UpdateUserRequest,
     User,
 )
-from ophelia_ci_interface.routers.dependencies import Template
+from ophelia_ci_interface.routers.dependencies import (
+    Health,
+    Metadata,
+    Template,
+    UserDependency,
+)
 
 router = APIRouter(prefix='/users', tags=['User'])
 
 
 users_modal = Modal(
     title='Create user',
+    action='/users/',
     items=[
         ModalItem(
             id='user_username',
@@ -24,7 +29,7 @@ users_modal = Modal(
             autocomplete='username',
         ),
         ModalItem(
-            id='user_private_key',
+            id='user_public_key',
             label='Private Key',
             type='textarea',
             autocomplete='off',
@@ -36,6 +41,7 @@ users_modal = Modal(
 
 user_modal = Modal(
     title='Update user',
+    action='/users/{username}/',
     items=[
         ModalItem(
             id='user_username',
@@ -44,7 +50,7 @@ user_modal = Modal(
             autocomplete='username',
         ),
         ModalItem(
-            id='user_private_key',
+            id='user_public_key',
             label='Private Key',
             type='textarea',
             autocomplete='off',
@@ -56,7 +62,13 @@ user_modal = Modal(
 
 
 @router.get('/', response_class=HTMLResponse)
-def users(request: Request, template: Template):
+def users(
+    request: Request,
+    user_service: UserDependency,
+    template: Template,
+    health_service: Health,
+    metadata: Metadata,
+):
     return template.TemplateResponse(
         'users.html',
         {
@@ -64,47 +76,77 @@ def users(request: Request, template: Template):
             'title': 'Collaborators - Ophelia CI',
             'page_title': 'Collaborators',
             'modal': users_modal,
-            'status': HealthService.get_status(),
-            'repositories': User.get_all(metadata=metadata),
+            'status': health_service.get_status(),
+            'repositories': User.get_all(user_service, metadata=metadata),
         },
     )
 
 
 @router.post('/', response_class=HTMLResponse)
-def create_user(request: Request, body: CreateUserRequest, template: Template):
-    User.create(body.user_username, body.user_private_key, metadata=metadata)
+def create_user(
+    user_service: UserDependency,
+    body: CreateUserRequest,
+    template: Template,
+    metadata: Metadata,
+):
+    User.create(
+        user_service,
+        body.user_username,
+        body.user_public_key,
+        metadata=metadata,
+    )
 
 
 @router.get('/{username}', response_class=HTMLResponse)
-def repository(request: Request, username: str, template: Template):
-    user = User.get_by_username(username, metadata=metadata)
+def repository(
+    request: Request,
+    user_service: UserDependency,
+    template: Template,
+    health_service: Health,
+    metadata: Metadata,
+    username: Annotated[
+        str, Path(title='Username', description='The username of the user')
+    ],
+):
+    user = User.get_by_username(user_service, username, metadata=metadata)
     return template.TemplateResponse(
         'repository.html',
         {
             'request': request,
             'username': username,
-            'status': HealthService.get_status(),
+            'status': health_service.get_status(),
             'user': user,
             'id': user.id,
-            'modal': user_modal,
+            'modal': user_modal.format_action({'username': username}),
         },
     )
 
 
 @router.put('/{username}', status_code=204)
 def update_repository(
-    request: Request, body: UpdateUserRequest, template: Template
+    user_service: UserDependency,
+    body: UpdateUserRequest,
+    template: Template,
+    metadata: Metadata,
 ):
     User.update(
-        body.id, body.user_username, body.user_private_key, metadata=metadata
+        user_service,
+        str(body.id),
+        body.user_username,
+        body.user_public_key,
+        metadata=metadata,
     )
 
 
 @router.delete('/{username}', response_class=RedirectResponse)
 def delete_repository(
-    request: Request, id: Annotated[str, Body(embed=True)], template: Template
+    request: Request,
+    user_service: UserDependency,
+    id: Annotated[str, Body(embed=True)],
+    template: Template,
+    metadata: Metadata,
 ):
-    User.delete(id, metadata=metadata)
+    User.delete(user_service, id, metadata=metadata)
     return RedirectResponse(
         url=request.url_for('repositories'),
         status_code=status.HTTP_303_SEE_OTHER,

@@ -1,76 +1,168 @@
-from functools import cache
+from typing import Annotated, Self
 
-from ophelia_ci_interface.config import Settings
+from ophelia_ci_interface.models.generals import MetadataTuple
 from ophelia_ci_interface.services.gRPC_service import UserService
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, Field
 
 
 class CreateUserRequest(BaseModel):
-    user_username: str
-    user_private_key: str
+    """
+    Model that represents the request to create a new user.
+
+    Attributes:
+        user_username (str): The username of the user.
+        user_public_key (str): The public key of the user.
+    """
+
+    user_username: Annotated[
+        str, Field(title='Username', description='The username of the user.')
+    ]
+    user_public_key: Annotated[
+        str,
+        Field(title='Private Key', description='The public key of the user.'),
+    ]
 
 
 class UpdateUserRequest(BaseModel):
-    id: UUID4
-    user_username: str
-    user_private_key: str
+    """
+    Model that represents the request to update an existing user.
+
+    Attributes:
+        id (UUID4): The ID of the user.
+        user_username (str): The username of the user.
+        user_public_key (str): The public key of the user.
+    """
+
+    id: Annotated[UUID4, Field(title='ID', description='The ID of the user.')]
+    user_username: Annotated[
+        str, Field(title='Username', description='The username of the user.')
+    ]
+    user_public_key: Annotated[
+        str,
+        Field(title='Private Key', description='The public key of the user.'),
+    ]
 
 
 class User(BaseModel):
+    """
+    Model that represents a user.
+
+    Attributes:
+        id (UUID4): The ID of the user.
+        username (str): The username of the user.
+    """
+
     model_config = {'arbitrary_types_allowed': True}
 
-    id: UUID4
-    username: str
-
-    @staticmethod
-    @cache
-    def get_service() -> UserService:
-        return UserService(str(Settings().GRPC_SERVER))
+    id: Annotated[UUID4, Field(title='ID', description='The ID of the user.')]
+    username: Annotated[
+        str, Field(title='Username', description='The username of the user.')
+    ]
 
     @classmethod
     def create(
         cls,
+        user_service: UserService,
         username: str,
-        private_key: str,
-        metadata: tuple[tuple[str, str]],
-    ):
-        response = cls.get_service().create_user(
-            username, private_key, metadata=metadata
+        public_key: str,
+        metadata: MetadataTuple,
+    ) -> Self:
+        """
+        Create a new user in the database.
+
+        :param user_service: the user service to use
+        :param username: the username of the user
+        :param public_key: the public key of the user
+        :param metadata: the metadata of the request
+        :return: the newly created user
+        """
+        response = user_service.create_user(
+            username, public_key, metadata=metadata
         )
         return cls(id=response.id, username=response.username)
 
     @classmethod
     def update(
         cls,
+        user_service: UserService,
         id: str,
         username: str,
-        private_key: str,
-        metadata: tuple[tuple[str, str]],
-    ):
-        response = cls.get_service().update_user(
-            id, username, private_key, metadata=metadata
+        public_key: str,
+        metadata: MetadataTuple,
+    ) -> Self:
+        """
+        Update an existing user in the database.
+
+        :param user_service: the user service to use
+        :param id: the id of the user
+        :param username: the username of the user
+        :param public_key: the public key of the user
+        :param metadata: the metadata of the request
+        :return: the updated user
+        """
+        response = user_service.update_user(
+            id, username, public_key, metadata=metadata
         )
         return cls(id=response.id, username=response.username)
 
     @classmethod
-    def get(cls, id: str, metadata: tuple[tuple[str, str]]):
-        response = cls.get_service().get_user(id, metadata=metadata)
+    def get(
+        cls, user_service: UserService, id: str, metadata: MetadataTuple
+    ) -> Self:
+        """
+        Get an existing user from the database.
+
+        :param user_service: the user service to use
+        :param id: the id of the user
+        :param metadata: the metadata of the request
+        :return: the user
+        """
+        response = user_service.get_user(id, metadata=metadata)
         return cls(id=response.id, username=response.username)
 
     @classmethod
-    def get_by_username(cls, username: str, metadata: tuple[tuple[str, str]]):
-        response = cls.get_service().get_user_by_username(
+    def get_by_username(
+        cls, user_service: UserService, username: str, metadata: MetadataTuple
+    ) -> Self:
+        """
+        Get an existing user from the database by its username.
+
+        :param user_service: the user service to use
+        :param username: the username of the user
+        :param metadata: the metadata of the request
+        :return: the user
+        """
+        response = user_service.get_user_by_username(
             username, metadata=metadata
         )
         return cls(id=response.id, username=response.username)
 
     @classmethod
-    def delete(cls, id: str, metadata: tuple[tuple[str, str]]):
-        cls.get_service().delete_user(id, metadata=metadata)
+    def delete(
+        cls, user_service: UserService, id: str, metadata: MetadataTuple
+    ) -> None:
+        """
+        Delete an existing user from the database.
+
+        :param user_service: the user service to use
+        :param id: the id of the user
+        :param metadata: the metadata of the request
+        :return: None
+        """
+        user_service.delete_user(id, metadata=metadata)
 
     @classmethod
-    def get_all(cls, metadata: tuple[tuple[str, str]]):
-        response_list = cls.get_service().get_users(metadata=metadata)
+    def get_all(
+        cls, user_service: UserService, metadata: MetadataTuple
+    ) -> list[Self]:
+        """
+        Get all existing users from the database.
+
+        :param user_service: the user service to use
+        :param metadata: the metadata of the request
+        :return: the list of users
+        """
+        response_list = user_service.get_users(metadata=metadata)
         return [
             cls(id=response.id, username=response.username)
             for response in response_list.users

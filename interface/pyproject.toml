@@ -2,7 +2,7 @@
 [tool.briefcase]
 project_name = "Ophelia CI"
 bundle = "com.planetae"
-version = "0.5.0"
+version = "0.6.0"
 url = "https://planetae.com/ophelia-ci-interface"
 license.file = "LICENSE"
 author = "Edmilson Rodrigues"

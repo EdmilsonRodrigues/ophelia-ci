@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+{% include 'components/head.html' %}
+
+<body>
+    <h1>Login</h1>
+    <form method="post" action="/login" enctype="multipart/form-data">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="edmilsonrodrigues"
+            autocomplete="email">
+        <label for="private_key">Private Key</label>
+        <input type="file" id="private_key" name="private_key" autocomplete="off">
+        <button type="submit" name="submit">Login</button>
+    </form>
+</body>
+
+</html>

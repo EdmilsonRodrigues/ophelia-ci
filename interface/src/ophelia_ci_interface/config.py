@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -11,13 +10,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file='.env', env_prefix='OPHELIA_CI_', extra='ignore'
     )
+    PORT: int = 8000
     GRPC_SERVER: str = 'localhost:50051'
     DEBUG: bool = False
-
-
-base_path = (
-    Path('ophelia_ci_interface')
-    if Settings().DEBUG
-    else Path(next(path for path in sys.path if 'app' in path))
-    / 'ophelia_ci_interface'
-)
+    SSL_KEYFILE: Path | None = None
+    SSL_CERTFILE: Path | None = None
+    WORKERS: int | None = None
