@@ -1,8 +1,9 @@
+import logging
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-VERSION = '0.6.1'
+VERSION = '0.7.0'
 GITIGNORE_OPTIONS = ['None', 'python', 'go']
 
 
@@ -22,4 +23,9 @@ base_path = (
     Path('ophelia_ci_interface')
     if Settings().DEBUG
     else Path('/usr/lib/ophelia-ci-interface/app/ophelia_ci_interface')
+)
+
+logging.basicConfig(
+    level=logging.DEBUG if Settings().DEBUG else logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
 )

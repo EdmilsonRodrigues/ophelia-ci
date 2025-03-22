@@ -44,7 +44,6 @@ repositories_modal = Modal(
         ),
     ],
     submit='Add repository',
-    submit_id='repository-create',
 )
 
 repository_modal = Modal(
@@ -66,7 +65,6 @@ repository_modal = Modal(
         ),
     ],
     submit='Update repository',
-    submit_id='{repo_name}',
 )
 
 
@@ -96,11 +94,21 @@ def repositories(
 @router.post('/', response_class=HTMLResponse)
 def create_repository(
     repository_service: RepositoryDependency,
-    req: Annotated[CreateRepositoryRequest, Form()],
+    req: Annotated[
+        CreateRepositoryRequest,
+        Form(title='Repository data', description='The repository data'),
+    ],
     template: Template,
     health_service: Health,
     metadata: Metadata,
 ):
+    """
+    Create a new repository in the database.
+
+    :param req: the request data
+
+    :return: the HTML response
+    """
     Repository.create(
         repository_service,
         req.repository_name,
@@ -125,6 +133,13 @@ def repository(
         ),
     ],
 ):
+    """
+    Get a repository by its name.
+
+    :param repo_name: the name of the repository
+
+    :return: the HTML response
+    """
     repository = Repository.get_by_name(
         settings, repository_service, repo_name, metadata=metadata
     )
@@ -144,11 +159,21 @@ def repository(
 @router.put('/{repo_name}', status_code=204)
 def update_repository(
     repository_service: RepositoryDependency,
-    req: Annotated[UpdateRepositoryRequest, Form()],
+    req: Annotated[
+        UpdateRepositoryRequest,
+        Form(title='Repository data', description='The repository data'),
+    ],
     template: Template,
     health_service: Health,
     metadata: Metadata,
-):
+) -> None:
+    """
+    Update an existing repository in the database.
+
+    :param req: the request data containing the repository update details
+
+    :return: None
+    """
     Repository.update(
         repository_service,
         str(req.id),
@@ -162,11 +187,23 @@ def update_repository(
 def delete_repository(
     request: Request,
     repository_service: RepositoryDependency,
-    id: Annotated[str, Body(embed=True)],
+    id: Annotated[
+        str,
+        Body(
+            title='Repository ID', description='The repository ID', embed=True
+        ),
+    ],
     template: Template,
     health_service: Health,
     metadata: Metadata,
 ):
+    """
+    Delete an existing repository from the database.
+
+    :param id: the ID of the repository
+
+    :return: a RedirectResponse object that redirects to the repositories page
+    """
     Repository.delete(repository_service, id, metadata=metadata)
     return RedirectResponse(
         url=request.url_for('repositories'),

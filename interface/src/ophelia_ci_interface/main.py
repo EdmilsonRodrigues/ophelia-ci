@@ -28,6 +28,14 @@ app.include_router(user_router)
 
 @app.middleware('http')
 async def redirect_401(request: Request, call_next):
+    """
+    Redirect all 401 responses to the login page.
+
+    :param request: The current request.
+    :param call_next: The next middleware to call.
+    :return: The response from the next middleware if the status code
+    is not 401, otherwise a RedirectResponse to the login page.
+    """
     response = await call_next(request)
     if response.status_code == 401:
         return RedirectResponse(url='/login')
@@ -39,9 +47,7 @@ def root() -> dict[Literal['version'], str]:
     """
     Return the version of Ophelia CI Interface.
 
-    Returns:
-        dict[Literal['version'], str]: A dictionary containing a single key,
-            'version', whose value is the version of Ophelia CI.
+    :return: A dictionary containing the version of Ophelia CI Interface.
     """
     return {'version': VERSION}
 
@@ -51,8 +57,7 @@ def home(request: Request, template: Template, health_service: Health):
     """
     Return the homepage of Ophelia CI Interface.
 
-    Returns:
-        HTMLResponse: The rendered homepage.
+    :return: An HTMLResponse containing the rendered homepage.
     """
     return template.TemplateResponse(
         'index.html',

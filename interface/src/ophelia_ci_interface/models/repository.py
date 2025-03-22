@@ -80,10 +80,26 @@ class Repository(BaseModel):
 
     model_config = {'arbitrary_types_allowed': True}
 
-    id: UUID4
-    name: str
-    description: str
-    last_updated: datetime
+    id: Annotated[
+        UUID4, Field(title='ID', description='The ID of the repository.')
+    ]
+    name: Annotated[
+        str, Field(title='Name', description='The name of the repository.')
+    ]
+    description: Annotated[
+        str,
+        Field(
+            title='Description',
+            description='The description of the repository.',
+        ),
+    ]
+    last_updated: Annotated[
+        datetime,
+        Field(
+            title='Last Updated',
+            description='The last updated time of the repository.',
+        ),
+    ]
     _clone_url: str | None = None
 
     @model_validator(mode='before')

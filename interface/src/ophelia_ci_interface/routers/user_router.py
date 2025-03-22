@@ -45,7 +45,6 @@ users_modal = Modal(
         ),
     ],
     submit='Add user',
-    submit_id='user-create',
 )
 
 user_modal = Modal(
@@ -67,7 +66,6 @@ user_modal = Modal(
         ),
     ],
     submit='Update user',
-    submit_id='{username}',
 )
 
 
@@ -79,6 +77,11 @@ def users(
     health_service: Health,
     metadata: Metadata,
 ):
+    """
+    Show all existing users in the database.
+
+    :return: the HTML response
+    """
     return template.TemplateResponse(
         'users.html',
         {
@@ -105,6 +108,15 @@ async def create_user(
     template: Template,
     metadata: Metadata,
 ):
+    """
+    Create a new user in the database with the provided username and
+    public key.
+
+    :param user_username: The username of the user to be created.
+    :param user_public_key: The file containing the public key of the user.
+
+    :return: The response to the request.
+    """
     User.create(
         user_service,
         user_username,
@@ -124,6 +136,13 @@ def repository(
         str, Path(title='Username', description='The username of the user')
     ],
 ):
+    """
+    Show a user in the database.
+
+    :param username: The username of the user.
+
+    :return: The HTML response.
+    """
     user = User.get_by_username(user_service, username, metadata=metadata)
     return template.TemplateResponse(
         'user.html',
@@ -145,6 +164,13 @@ def update_repository(
     template: Template,
     metadata: Metadata,
 ):
+    """
+    Update an existing user in the database.
+
+    :param body: the request containing the user ID, username and public key
+
+    :return: None
+    """
     User.update(
         user_service,
         str(body.id),
@@ -162,8 +188,16 @@ def delete_repository(
     template: Template,
     metadata: Metadata,
 ):
+    """
+    Delete an existing user from the database and redirect to the users
+    page.
+
+    :param id: The ID of the user to be deleted.
+
+    :return: A RedirectResponse object that redirects to the users page.
+    """
     User.delete(user_service, id, metadata=metadata)
     return RedirectResponse(
-        url=request.url_for('repositories'),
+        url=request.url_for('users'),
         status_code=status.HTTP_303_SEE_OTHER,
     )

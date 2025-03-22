@@ -203,6 +203,8 @@ func (s *server) UniqueKeyLogin(ctx context.Context, req *pb.UniqueKeyLoginReque
 // Returns:
 // - bool: True if the verification is successful, false otherwise.
 func verifySignature(storedKey ssh.PublicKey, challengeBytes, signatureBytes []byte) bool {
+	log.Printf("Public key type: %s", storedKey.Type())
+	log.Printf("Signature: %x", signatureBytes)
 	h := sha256.Sum256(challengeBytes)
 
 	signature := &ssh.Signature{

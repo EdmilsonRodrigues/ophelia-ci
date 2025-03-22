@@ -8,8 +8,8 @@ DEPENDENCIES=$(sed -n '/^\s*]/q; s/^\s*"\([^"]*\).*/\1/p' $ORIGINAL_PYPROJECT)
 VERSION=$(sed -n 's/^\s*version = "\([^"]*\).*/\1/p' $ORIGINAL_PYPROJECT)
 FORMATTED_DEPS=$(echo "$DEPENDENCIES" | awk '{print "    \"" $0 "\","}')
 
-BRIEFCASE_START=$(sed '/^\s*requires/q' $BRIEFCASE_PYPROJECT)
-sed -i "s/version = .*/version = \"$VERSION\"/" $BRIEFCASE_PYPROJECT
+BRIEFCASE_START=$(sed "/^\s*requires/q; s/version = .*/version = \"${VERSION}\"/" $BRIEFCASE_PYPROJECT)
+# BRIEFCASE_START=$(echo $BRIEFCASE_START | sed "s/version = .*/version = \"${VERSION}\"/")
 BRIEFCASE_START_WITH_DEPENDENCIES=$(echo "${BRIEFCASE_START}
 ${FORMATTED_DEPS}
 ]")

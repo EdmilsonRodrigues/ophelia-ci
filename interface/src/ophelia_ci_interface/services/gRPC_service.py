@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import io
+import logging
 
 import grpc  # type: ignore[import-untyped]  # type: ignore[import-untyped]  # type: ignore[import-untyped]  # type: ignore[import-untyped]
 import ophelia_ci_interface.services.common_pb2 as common_pb2
@@ -10,6 +11,10 @@ import ophelia_ci_interface.services.repository_pb2_grpc as repository_pb2_grpc
 import ophelia_ci_interface.services.user_pb2 as user_pb2
 import ophelia_ci_interface.services.user_pb2_grpc as user_pb2_grpc
 import paramiko
+from ophelia_ci_interface.models.generals import (
+    OpheliaException,
+    log_formatted,
+)
 
 
 class ServiceMixin[T]:
@@ -66,6 +71,7 @@ class HealthService(ServiceMixin):
                 self.stub.Health(common_pb2.Empty())
                 return 'Connected'
             except grpc.RpcError:
+                log_formatted('Failed Connecting', logging_level=logging.ERROR)
                 return 'Failed Connecting'
 
 
@@ -79,8 +85,8 @@ class RepositoryService(ServiceMixin):
         :param metadata: The metadata for the request.
         :return: A response containing a list of repositories.
         """
-
         with self:
+            log_formatted('Getting repositories')
             response_list = self.stub.ListRepository(
                 common_pb2.Empty(), metadata=metadata
             )
@@ -104,6 +110,12 @@ class RepositoryService(ServiceMixin):
         :return: the newly created repository
         """
         with self:
+            log_formatted(
+                'Creating repository',
+                name=name,
+                description=description,
+                gitignore=gitignore,
+            )
             response_create = self.stub.CreateRepository(
                 repository_pb2.CreateRepositoryRequest(
                     name=name,
@@ -131,6 +143,12 @@ class RepositoryService(ServiceMixin):
         :return: the updated repository
         """
         with self:
+            log_formatted(
+                'Updating repository',
+                id=id,
+                name=name,
+                description=description,
+            )
             response_update = self.stub.UpdateRepository(
                 repository_pb2.UpdateRepositoryRequest(
                     id=id,
@@ -149,8 +167,8 @@ class RepositoryService(ServiceMixin):
         :param metadata: the metadata for the request
         :return: the retrieved repository
         """
-
         with self:
+            log_formatted('Getting repository', id=id)
             response_get = self.stub.GetRepository(
                 repository_pb2.GetRepositoryRequest(id=id), metadata=metadata
             )
@@ -165,6 +183,7 @@ class RepositoryService(ServiceMixin):
         :return: The repository response from the database.
         """
         with self:
+            log_formatted('Getting repository', name=name)
             response_get = self.stub.GetRepository(
                 repository_pb2.GetRepositoryRequest(name=name),
                 metadata=metadata,
@@ -180,6 +199,7 @@ class RepositoryService(ServiceMixin):
         :return: the deleted repository
         """
         with self:
+            log_formatted('Deleting repository', id=id)
             response_delete = self.stub.DeleteRepository(
                 repository_pb2.DeleteRepositoryRequest(id=id),
                 metadata=metadata,
@@ -197,10 +217,11 @@ class AuthenticationService(ServiceMixin):
         :param username: the username of the user
         :param private_key: the private key of the user
         :return: the token of the user if the authentication is successful
-        :raises Exception: if the authentication failed
+        :raises OpheliaException: if the authentication failed
         """
         with self:
-            challenge = self.request_challenge(username)
+            log_formatted('Authenticating user', username=username)
+            challenge = self._request_challenge(username)
             private_key_obj = paramiko.RSAKey(
                 file_obj=io.StringIO(private_key)
             )
@@ -208,6 +229,15 @@ class AuthenticationService(ServiceMixin):
             hash_obj = hashlib.sha256(challenge_bytes)
             signature = private_key_obj.sign_ssh_data(hash_obj.digest())
             signature_b64 = base64.b64encode(bytes(signature)).decode('utf-8')
+            log_formatted(
+                'Signing challenge',
+                challenge=challenge.challenge,
+                challenge_bytes=challenge_bytes,
+                signature=bytes(signature).decode('utf-8'),
+                signature_b64=signature_b64,
+                logging_level=logging.DEBUG,
+                sensitive=True,
+            )
             response_auth = self.stub.Authentication(
                 user_pb2.AuthenticationRequest(
                     username=username, challenge=signature_b64
@@ -215,9 +245,9 @@ class AuthenticationService(ServiceMixin):
             )
             if response_auth.authenticated:
                 return response_auth.token
-            raise Exception('Authentication failed')
+            raise OpheliaException('Authentication failed')
 
-    def request_challenge(self, username: str):
+    def _request_challenge(self, username: str):
         """
         Requests a challenge from the server to be signed by the user.
 
@@ -235,15 +265,20 @@ class AuthenticationService(ServiceMixin):
 
         :param unique_key: the unique key of the user
         :return: the token of the user if the authentication is successful
-        :raises Exception: if the authentication failed
+        :raises OpheliaException: if the authentication failed
         """
         with self:
+            log_formatted(
+                'Authenticating via Unique Key',
+                unique_key=unique_key,
+                logging_level=logging.WARNING,
+            )
             response_auth = self.stub.UniqueKeyLogin(
                 user_pb2.UniqueKeyLoginRequest(uniqueKey=unique_key)
             )
             if response_auth.authenticated:
                 return response_auth.token
-            raise Exception('Authentication failed')
+            raise OpheliaException('Authentication failed')
 
 
 class UserService(ServiceMixin):
@@ -261,6 +296,7 @@ class UserService(ServiceMixin):
         :return: the newly created user
         """
         with self:
+            log_formatted('Creating user', username=username)
             response_create = self.stub.CreateUser(
                 user_pb2.CreateUserRequest(
                     username=username,
@@ -279,6 +315,7 @@ class UserService(ServiceMixin):
         :return: the user
         """
         with self:
+            log_formatted('Getting user', id=id)
             response_get = self.stub.GetUser(
                 user_pb2.GetUserRequest(id=id), metadata=metadata
             )
@@ -295,6 +332,7 @@ class UserService(ServiceMixin):
         :return: the user
         """
         with self:
+            log_formatted('Getting user', username=username)
             response_get = self.stub.GetUser(
                 user_pb2.GetUserRequest(username=username), metadata=metadata
             )
@@ -307,8 +345,8 @@ class UserService(ServiceMixin):
         :param metadata: The metadata for the request.
         :return: A response containing a list of users.
         """
-
         with self:
+            log_formatted('Getting users')
             response_get = self.stub.ListUser(
                 common_pb2.Empty(), metadata=metadata
             )
@@ -331,6 +369,7 @@ class UserService(ServiceMixin):
         :return: the updated user
         """
         with self:
+            log_formatted('Updating user', id=id, username=username)
             response_update = self.stub.UpdateUser(
                 user_pb2.UpdateUserRequest(
                     id=id,
@@ -350,6 +389,7 @@ class UserService(ServiceMixin):
         :return: the deleted user
         """
         with self:
+            log_formatted('Deleting user', id=id)
             response_delete = self.stub.DeleteUser(
                 user_pb2.DeleteUserRequest(id=id), metadata=metadata
             )

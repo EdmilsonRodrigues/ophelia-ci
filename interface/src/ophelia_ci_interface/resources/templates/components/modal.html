@@ -8,11 +8,12 @@
             </div>
         </div>
         <div class="p-panel__content">
-            <form class="p-form p-form--stacked" data-id="{{ id }}" data-method="{{ modal.method }}" id="modal-form" method="{{ modal.method }}" action="{{ modal.action }}" enctype="multipart/form-data">
+            <form class="p-form p-form--stacked" data-id="{{ id }}" data-method="{{ modal.method }}" id="modal-form"
+                method="{{ modal.method }}" action="{{ modal.action }}" enctype="multipart/form-data">
                 {% for item in modal.items %}
                 <div class="p-form__group row">
 
-                    <div class="col-4"> 
+                    <div class="col-4">
                         <label for="{{ item.id }}" class="p-form__label">{{ item.label }}</label>
                     </div>
 
@@ -26,7 +27,7 @@
                             </select>
 
                             {% elif item.type == 'textarea' %}
-                            <textarea id="{{ item.id }}" name="{{ item.id }}" rows="5"></textarea>                            
+                            <textarea id="{{ item.id }}" name="{{ item.id }}" rows="5"></textarea>
 
                             {% else %}
                             <input type="{{ item.type }}" id="{{ item.id }}" name="{{ item.id }}"
@@ -41,7 +42,8 @@
 
                 <div class="row">
                     <div class="col-12">
-                        <button class="p-button--positive u-float-right" onclick="submitModal(event)" id="{{ modal.submit_id }}" name="add-details">{{ modal.submit }}</button>
+                        <button class="p-button--positive u-float-right" onclick="submitModal(event)"
+                            name="add-details">{{ modal.submit }}</button>
                     </div>
                 </div>
             </form>

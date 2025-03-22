@@ -2,8 +2,8 @@
 [tool.briefcase]
 project_name = "Ophelia CI"
 bundle = "com.planetae"
-version = "0.6.0"
-url = "https://planetae.com/ophelia-ci-interface"
+version = "0.7.0"
+url = "https://github.com/EdmilsonRodrigues/ophelia-ci"
 license.file = "LICENSE"
 author = "Edmilson Rodrigues"
 author_email = "edmilson.monteiro.rodrigues@gmail.com"
@@ -90,7 +90,7 @@ system_runtime_requires = [
 
 [tool.briefcase.app.ophelia-ci-interface.linux.flatpak]
 flatpak_runtime = "org.freedesktop.Platform"
-flatpak_runtime_version = "0.6.1"
+flatpak_runtime_version = "0.7.0"
 flatpak_sdk = "org.freedesktop.Sdk"
 
 [tool.briefcase.app.ophelia-ci-interface.windows]
