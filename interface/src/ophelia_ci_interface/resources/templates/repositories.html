@@ -11,7 +11,7 @@
     </thead>
     <tbody>
         {% for repo in repositories %}
-        <tr uuid="{{ repo.uuid }}">
+        <tr uuid="{{ repo.id }}">
             <td class="" data-test-column="name">
                 <div><a href="/repositories/{{ repo.name }}">{{ repo.name }}</a></div>
             </td>

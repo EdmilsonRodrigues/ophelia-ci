@@ -5,8 +5,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from ophelia_ci_interface.config import VERSION, base_path
+from ophelia_ci_interface.routers.authentication_router import (
+    router as authentication_router,
+)
 from ophelia_ci_interface.routers.dependencies import Health, Template
-from ophelia_ci_interface.routers.authentication_router import router as authentication_router
 from ophelia_ci_interface.routers.repository_router import (
     router as repository_router,
 )
@@ -24,11 +26,11 @@ app.include_router(repository_router)
 app.include_router(user_router)
 
 
-@app.middleware("http")
+@app.middleware('http')
 async def redirect_401(request: Request, call_next):
     response = await call_next(request)
     if response.status_code == 401:
-        return RedirectResponse(url="/login")
+        return RedirectResponse(url='/login')
     return response
 
 

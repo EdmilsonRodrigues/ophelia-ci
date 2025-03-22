@@ -23,4 +23,5 @@ class Modal(BaseModel):
 
     def format_action(self, **kwargs) -> Self:
         self.action = self.action.format(**kwargs)
+        self.submit_id = self.submit_id.format(**kwargs)
         return self

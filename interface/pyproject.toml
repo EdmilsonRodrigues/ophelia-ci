@@ -17,6 +17,7 @@ requires = [
     "protobuf>=5.29.3",
     "pydantic-settings>=2.8.1",
     "pydantic[email]>=2.10.6",
+    "types-paramiko>=3.5.0.20240928",
     "types-protobuf>=5.29.1.20250315",
     "uvicorn[standard]>=0.34.0",
 ]
@@ -89,7 +90,7 @@ system_runtime_requires = [
 
 [tool.briefcase.app.ophelia-ci-interface.linux.flatpak]
 flatpak_runtime = "org.freedesktop.Platform"
-flatpak_runtime_version = "0.6.0"
+flatpak_runtime_version = "0.6.1"
 flatpak_sdk = "org.freedesktop.Sdk"
 
 [tool.briefcase.app.ophelia-ci-interface.windows]

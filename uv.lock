@@ -624,7 +624,7 @@ wheels = [
 
 [[package]]
 name = "ophelia-ci-interface"
-version = "0.5.0"
+version = "0.6.1"
 source = { virtual = "." }
 dependencies = [
     { name = "fastapi", extra = ["all"] },
@@ -635,6 +635,7 @@ dependencies = [
     { name = "protobuf" },
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-settings" },
+    { name = "types-paramiko" },
     { name = "types-protobuf" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -662,6 +663,7 @@ requires-dist = [
     { name = "protobuf", specifier = ">=5.29.3" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.10.6" },
     { name = "pydantic-settings", specifier = ">=2.8.1" },
+    { name = "types-paramiko", specifier = ">=3.5.0.20240928" },
     { name = "types-protobuf", specifier = ">=5.29.1.20250315" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34.0" },
 ]
@@ -1150,6 +1152,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8b/6f/3991f0f1c7fcb2df31aef28e0594d8d54b05393a0e4e34c65e475c2a5d41/typer-0.15.2.tar.gz", hash = "sha256:ab2fab47533a813c49fe1f16b1a370fd5819099c00b119e0633df65f22144ba5", size = 100711 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7f/fc/5b29fea8cee020515ca82cc68e3b8e1e34bb19a3535ad854cac9257b414c/typer-0.15.2-py3-none-any.whl", hash = "sha256:46a499c6107d645a9c13f7ee46c5d5096cae6f5fc57dd11eccbbb9ae3e44ddfc", size = 45061 },
+]
+
+[[package]]
+name = "types-paramiko"
+version = "3.5.0.20240928"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cryptography" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ae/00/733b05fa97328becc7606301d9ae4c7ec7ec9e92324b8420208e397f3ac7/types-paramiko-3.5.0.20240928.tar.gz", hash = "sha256:79dd9b2ee510b76a3b60d8ac1f3f348c45fcecf01347ca79e14db726bbfc442d", size = 23213 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8e/e5/afb514829e7184e7518a62c014dc364f7a9d47f9112ff26c63835cbf0de5/types_paramiko-3.5.0.20240928-py3-none-any.whl", hash = "sha256:cda0aff4905fe8efe4b5448331a80e943d42a796bd4beb77a3eed3485bc96a85", size = 34016 },
 ]
 
 [[package]]

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<table aria-label="JAAS table example" class="p-main-table">
+    <thead>
+        <tr>
+            <th><span class="status-icon is-blocked">Admins</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr uuid="{{ user.id }}">
+            <td class="" data-test-column="name">
+                <div><a href="/users/{{ user.username }}">{{ user.username }}</a></div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

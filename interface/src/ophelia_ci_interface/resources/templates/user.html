@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section id="repository-section" data-id="{{ id }}" class="p-section">
+    <hr class="p-rule">
+    <h3>
+        {{ user.username }} 
+        <button onclick="deleteObject('{{ id }}')" data-id="{{ id }}"><i class="p-icon--delete"></i></button>
+    </h3>
+
+
+    <div class="p-section--shallow">
+        <p>Soon a description field...</p>
+    </div>
+</section>
+{% endblock %}

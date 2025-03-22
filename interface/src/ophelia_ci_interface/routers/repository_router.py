@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Path, Request, status
+from fastapi import APIRouter, Body, Form, Path, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from ophelia_ci_interface.config import GITIGNORE_OPTIONS
 from ophelia_ci_interface.models.generals import Modal, ModalItem
@@ -66,7 +66,7 @@ repository_modal = Modal(
         ),
     ],
     submit='Update repository',
-    submit_id='repository-update',
+    submit_id='{repo_name}',
 )
 
 
@@ -96,16 +96,16 @@ def repositories(
 @router.post('/', response_class=HTMLResponse)
 def create_repository(
     repository_service: RepositoryDependency,
-    body: CreateRepositoryRequest,
+    req: Annotated[CreateRepositoryRequest, Form()],
     template: Template,
     health_service: Health,
     metadata: Metadata,
 ):
     Repository.create(
         repository_service,
-        body.repository_name,
-        body.repository_description,
-        body.repository_gitignore,
+        req.repository_name,
+        req.repository_description,
+        req.repository_gitignore,
         metadata=metadata,
     )
 
@@ -144,16 +144,16 @@ def repository(
 @router.put('/{repo_name}', status_code=204)
 def update_repository(
     repository_service: RepositoryDependency,
-    body: UpdateRepositoryRequest,
+    req: Annotated[UpdateRepositoryRequest, Form()],
     template: Template,
     health_service: Health,
     metadata: Metadata,
 ):
     Repository.update(
         repository_service,
-        str(body.id),
-        body.repository_name,
-        body.repository_description,
+        str(req.id),
+        req.repository_name,
+        req.repository_description,
         metadata=metadata,
     )
 

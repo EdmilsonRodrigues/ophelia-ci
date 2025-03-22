@@ -27,6 +27,7 @@ type server struct {
 	challenges       sync.Map
 }
 
+// Main starts the Ophelia CI Server Service.
 func main() {
 	log.Println("Ophelia CI Server Service started!")
 
@@ -79,6 +80,17 @@ func main() {
 	}
 }
 
+// Health is a gRPC service method that provides a simple health check.
+// It returns an empty response to indicate the server is running and reachable.
+//
+// Parameters:
+// - ctx: The context for the request, which carries deadlines, cancellation signals,
+//   and other request-scoped values.
+// - req: An empty request message as defined in the protobuf service definition.
+//
+// Returns:
+// - *pb.Empty: An empty response message indicating the server is healthy.
+// - error: Always returns nil since this operation is expected to succeed.
 func (s *server) Health(ctx context.Context, req *pb.Empty) (*pb.Empty, error) {
 	return &pb.Empty{}, nil
 }

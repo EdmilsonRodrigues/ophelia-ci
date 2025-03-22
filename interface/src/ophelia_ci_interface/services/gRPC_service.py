@@ -22,6 +22,7 @@ class ServiceMixin[T]:
     :param stub_class: the stub class
     :param stub: the stub instance
     """
+
     server: str
     stub_class: type[T]
     stub: T
@@ -50,6 +51,7 @@ class HealthService(ServiceMixin):
     :param stub_class: the stub class
     :param stub: the stub instance
     """
+
     stub_class = health_pb2_grpc.HealthServiceStub
 
     def get_status(self) -> str:

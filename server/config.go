@@ -25,6 +25,11 @@ var (
 	once        sync.Once
 )
 
+// LoadConfig reads the server configuration from a TOML file located at
+// "/etc/ophelia-ci/server-config.toml". It uses a sync.Once to ensure the
+// configuration is loaded only once and caches the result. If reading the
+// file or unmarshalling the TOML data fails, the function panics. It 
+// returns the cached configuration.
 func LoadConfig() Config {
 	once.Do(func() {
 		data, err := os.ReadFile("/etc/ophelia-ci/server-config.toml")

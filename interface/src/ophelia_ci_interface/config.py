@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-VERSION = '0.6.0'
+VERSION = '0.6.1'
 GITIGNORE_OPTIONS = ['None', 'python', 'go']
 
 

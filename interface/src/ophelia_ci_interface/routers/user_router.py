@@ -1,10 +1,18 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Path, Request, status
+from fastapi import (
+    APIRouter,
+    Body,
+    File,
+    Form,
+    Path,
+    Request,
+    UploadFile,
+    status,
+)
 from fastapi.responses import HTMLResponse, RedirectResponse
 from ophelia_ci_interface.models.generals import Modal, ModalItem
 from ophelia_ci_interface.models.user import (
-    CreateUserRequest,
     UpdateUserRequest,
     User,
 )
@@ -31,8 +39,8 @@ users_modal = Modal(
         ),
         ModalItem(
             id='user_public_key',
-            label='Private Key',
-            type='textarea',
+            label='Public Key',
+            type='file',
             autocomplete='off',
         ),
     ],
@@ -53,13 +61,13 @@ user_modal = Modal(
         ),
         ModalItem(
             id='user_public_key',
-            label='Private Key',
-            type='textarea',
+            label='Public Key',
+            type='file',
             autocomplete='off',
         ),
     ],
     submit='Update user',
-    submit_id='user-update',
+    submit_id='{username}',
 )
 
 
@@ -79,22 +87,28 @@ def users(
             'page_title': 'Collaborators',
             'modal': users_modal,
             'status': health_service.get_status(),
-            'repositories': User.get_all(user_service, metadata=metadata),
+            'users': User.get_all(user_service, metadata=metadata),
         },
     )
 
 
-@router.post('/', response_class=HTMLResponse)
-def create_user(
+@router.post('/', status_code=204)
+async def create_user(
     user_service: UserDependency,
-    body: CreateUserRequest,
+    user_username: Annotated[
+        str, Form(title='Username', description='The username of the user.')
+    ],
+    user_public_key: Annotated[
+        UploadFile,
+        File(title='Private Key', description='The public key of the user.'),
+    ],
     template: Template,
     metadata: Metadata,
 ):
     User.create(
         user_service,
-        body.user_username,
-        body.user_public_key,
+        user_username,
+        (await user_public_key.read()).decode('utf-8'),
         metadata=metadata,
     )
 
@@ -112,7 +126,7 @@ def repository(
 ):
     user = User.get_by_username(user_service, username, metadata=metadata)
     return template.TemplateResponse(
-        'repository.html',
+        'user.html',
         {
             'request': request,
             'username': username,
@@ -127,7 +141,7 @@ def repository(
 @router.put('/{username}', status_code=204)
 def update_repository(
     user_service: UserDependency,
-    body: UpdateUserRequest,
+    body: Annotated[UpdateUserRequest, Form()],
     template: Template,
     metadata: Metadata,
 ):

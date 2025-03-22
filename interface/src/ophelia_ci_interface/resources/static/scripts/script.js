@@ -1,13 +1,3 @@
-/*
-  Set up event handlers for application layout examples.
-  This is for demo purposes only. Real applications should implement it within their application code.
-*/
-
-// const modalsMapping = {
-//   'repository-create': createRepositoryFromModal,
-//   'repository-update': updateRepositoryFromModal,
-// }
-
 function setupAppLayoutExamples() {
   var aside = document.querySelector('.l-aside');
   var navigation = document.querySelector('.l-navigation');
@@ -84,6 +74,66 @@ function setupAppLayoutExamples() {
       }
     });
   }
+}
+
+function submitModal(event) {
+  event.preventDefault();
+  const form = document.getElementById('modal-form');
+  const formData = new FormData(form);
+  const method = form.attributes['data-method'].value;
+  if (method === 'PUT') {
+    const id = form.attributes['data-id'].value;
+    formData.append('id', id);
+    fetch(form.action, {
+      method: 'PUT',
+      body: formData,
+    })
+      .then(response => {
+        if (response.ok) {
+          console.log('Repository updated successfully');
+          const url = new URL(form.action);
+          const pathParts = url.pathname.split('/');
+          pathParts.pop();
+          url.pathname = pathParts.join('/');
+          window.location.href = url.href;
+        } else {
+          console.error('Failed to update repository');
+        }
+      })
+      .catch(error => {
+        console.error('Network error:', error);
+      });
+  }
+  form.submit().then(response => {
+    if (response.ok) {
+      console.log('Form submitted successfully');
+      window.location.reload();
+    } else {
+      console.error('Failed to submit form');
+    }
+  })
+    .catch(error => {
+      console.error('Network error:', error);
+    });
+}
+
+function deleteObject(id) {
+  fetch(window.location.href, {
+    method: 'DELETE', body: {
+      id: id
+    },
+  })
+    .then(response => {
+      if (response.ok) {
+        console.log('Object deleted successfully');
+        window.location.href = response.headers.get('Location');
+      } else {
+        console.error('Failed to delete object');
+      }
+    })
+    .catch(error => {
+      console.error('Network error:', error);
+    });
 }
 
 setupAppLayoutExamples();
