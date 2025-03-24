@@ -2,3 +2,8 @@
 
 %:
     dh $@
+
+override_dh_install:
+    dh_install
+    chmod a+x usr/lib/ophelia-ci-server/config
+    chmod a+x usr/lib/ophelia-ci-server/configure_toml.py

@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -14,6 +15,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     GRPC_SERVER: str = 'localhost:50051'
     DEBUG: bool = False
+    LOG_LEVEL: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR'] = 'INFO'
     SSL_KEYFILE: Path | None = None
     SSL_CERTFILE: Path | None = None
     WORKERS: int | None = None
@@ -26,6 +28,6 @@ base_path = (
 )
 
 logging.basicConfig(
-    level=logging.DEBUG if Settings().DEBUG else logging.INFO,
+    level=logging.getLevelName(Settings().LOG_LEVEL),
     format='%(asctime)s - %(levelname)s - %(message)s',
 )

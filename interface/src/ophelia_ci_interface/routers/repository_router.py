@@ -16,6 +16,7 @@ from ophelia_ci_interface.routers.dependencies import (
     SettingsDependency,
     Template,
 )
+from pydantic import UUID4
 
 router = APIRouter(prefix='/repositories', tags=['Repository'])
 
@@ -116,6 +117,9 @@ def create_repository(
         req.repository_gitignore,
         metadata=metadata,
     )
+    return RedirectResponse(
+        url='/repositories/', status_code=status.HTTP_201_CREATED
+    )
 
 
 @router.get('/{repo_name}', response_class=HTMLResponse)
@@ -188,7 +192,7 @@ def delete_repository(
     request: Request,
     repository_service: RepositoryDependency,
     id: Annotated[
-        str,
+        UUID4,
         Body(
             title='Repository ID', description='The repository ID', embed=True
         ),
@@ -204,7 +208,7 @@ def delete_repository(
 
     :return: a RedirectResponse object that redirects to the repositories page
     """
-    Repository.delete(repository_service, id, metadata=metadata)
+    Repository.delete(repository_service, str(id), metadata=metadata)
     return RedirectResponse(
         url=request.url_for('repositories'),
         status_code=status.HTTP_303_SEE_OTHER,

@@ -1,6 +1,16 @@
 #!/bin/sh
 set -e
 
+if [ ! -f /etc/ophelia-ci/server-config.toml ]; then
+    cat <<EOF > /etc/ophelia-ci/server-config.toml
+[server]
+port = 50051
+db_path = "/var/lib/ophelia/ophelia.db"
+expiration_time = 30
+
+EOF
+fi
+
 if ! id -g ophelia > /dev/null 2> /dev/null; then
     addgroup --system ophelia
 fi
@@ -9,11 +19,19 @@ if ! id -u ophelia > /dev/null 2> /dev/null; then
     adduser --system --ingroup ophelia --home /var/lib/ophelia ophelia
 fi
 
-# chown -R ophelia:ophelia /var/lib/ophelia
-# chmod 750 /var/lib/ophelia
+if [ ! -d /var/lib/ophelia ]; then
+    mkdir -p /var/lib/ophelia
+fi
+
+/usr/lib/ophelia-ci-server/config
+
+chown ophelia:ophelia /var/lib/ophelia
+chmod 750 /var/lib/ophelia
 
 chown root:ophelia /etc/ophelia-ci/server-config.toml
 chmod 644 /etc/ophelia-ci/server-config.toml
 
 systemctl enable ophelia-ci-server.service
 systemctl start ophelia-ci-server.service
+
+exit 0

@@ -226,18 +226,23 @@ class AuthenticationService(ServiceMixin):
                 file_obj=io.StringIO(private_key)
             )
             challenge_bytes = base64.b64decode(challenge.challenge)
-            hash_obj = hashlib.sha256(challenge_bytes)
-            signature = private_key_obj.sign_ssh_data(hash_obj.digest())
-            signature_b64 = base64.b64encode(bytes(signature)).decode('utf-8')
+            h = hashlib.sha256(challenge_bytes).digest()
+
+            signature = private_key_obj.sign_ssh_data(h)
+
+            blob = self.get_signature_blob(signature)
+
+            # Send just the blob part
+            signature_b64 = base64.b64encode(blob).decode('utf-8')
+
             log_formatted(
                 'Signing challenge',
                 challenge=challenge.challenge,
-                challenge_bytes=challenge_bytes,
-                signature=bytes(signature).decode('utf-8'),
                 signature_b64=signature_b64,
                 logging_level=logging.DEBUG,
                 sensitive=True,
             )
+
             response_auth = self.stub.Authentication(
                 user_pb2.AuthenticationRequest(
                     username=username, challenge=signature_b64
@@ -258,6 +263,30 @@ class AuthenticationService(ServiceMixin):
             user_pb2.AuthenticationChallengeRequest(username=username)
         )
         return response_challenge
+
+    @staticmethod
+    def get_signature_blob(signature: paramiko.Message) -> bytes:
+        """
+        Get the signature blob from the SSH signature.
+
+        SSH signature format:
+        - 4 bytes: length of format string
+        - format string (e.g., "ssh-rsa")
+        - 4 bytes: length of signature blob
+        - signature blob
+
+        :param signature: the SSH signature
+        :return: the signature blob
+
+        """
+        # Skip format string and length
+        sig_io = io.BytesIO(bytes(signature))
+        fmt_len = int.from_bytes(sig_io.read(4), byteorder='big')
+        sig_io.read(fmt_len)  # Skip the format string
+
+        # Read blob length and blob
+        blob_len = int.from_bytes(sig_io.read(4), byteorder='big')
+        return sig_io.read(blob_len)
 
     def authenticate_with_unique_key(self, unique_key: str):
         """

@@ -1,13 +1,21 @@
 #!/bin/sh
 set -e
 
-systemctl stop ophelia-ci-server.service || true
-systemctl disable ophelia-ci-server.service || true
+systemctl stop ophelia-ci-server.service || {
+    echo "Failed to stop ophelia-ci-server.service" >&2
+}
+systemctl disable ophelia-ci-server.service || {
+    echo "Failed to disable ophelia-ci-server.service" >&2
+}
 
-if id -u ophelia > /dev/null 2> /dev/null; then
-    userdel -r ophelia
+if [ "$1" = "remove" ] && [ "$2" = "purge" ]; then
+    if id -u ophelia > /dev/null 2> /dev/null; then
+        rm -rf /var/lib/ophelia
+        userdel -r ophelia
+    fi
 fi
 
 systemctl daemon-reload --force
 echo "Daemon reloaded"
 
+exit 0

@@ -13,7 +13,6 @@ from fastapi import (
 from fastapi.responses import HTMLResponse, RedirectResponse
 from ophelia_ci_interface.models.generals import Modal, ModalItem
 from ophelia_ci_interface.models.user import (
-    UpdateUserRequest,
     User,
 )
 from ophelia_ci_interface.routers.dependencies import (
@@ -22,6 +21,7 @@ from ophelia_ci_interface.routers.dependencies import (
     Template,
     UserDependency,
 )
+from pydantic import UUID4
 
 router = APIRouter(prefix='/users', tags=['User'])
 
@@ -123,6 +123,7 @@ async def create_user(
         (await user_public_key.read()).decode('utf-8'),
         metadata=metadata,
     )
+    return RedirectResponse(url='/users/', status_code=status.HTTP_201_CREATED)
 
 
 @router.get('/{username}', response_class=HTMLResponse)
@@ -158,9 +159,16 @@ def repository(
 
 
 @router.put('/{username}', status_code=204)
-def update_repository(
+async def update_repository(
     user_service: UserDependency,
-    body: Annotated[UpdateUserRequest, Form()],
+    id: Annotated[UUID4, Form(title='ID', description='The ID of the user')],
+    user_username: Annotated[
+        str, Form(title='Username', description='The username of the user')
+    ],
+    user_public_key: Annotated[
+        UploadFile,
+        File(title='Private Key', description='The public key of the user.'),
+    ],
     template: Template,
     metadata: Metadata,
 ):
@@ -173,9 +181,9 @@ def update_repository(
     """
     User.update(
         user_service,
-        str(body.id),
-        body.user_username,
-        body.user_public_key,
+        str(id),
+        user_username,
+        (await user_public_key.read()).decode('utf-8'),
         metadata=metadata,
     )
 
@@ -184,7 +192,7 @@ def update_repository(
 def delete_repository(
     request: Request,
     user_service: UserDependency,
-    id: Annotated[str, Body(embed=True)],
+    id: Annotated[UUID4, Body(embed=True)],
     template: Template,
     metadata: Metadata,
 ):
@@ -196,7 +204,7 @@ def delete_repository(
 
     :return: A RedirectResponse object that redirects to the users page.
     """
-    User.delete(user_service, id, metadata=metadata)
+    User.delete(user_service, str(id), metadata=metadata)
     return RedirectResponse(
         url=request.url_for('users'),
         status_code=status.HTTP_303_SEE_OTHER,

@@ -5,26 +5,6 @@ from ophelia_ci_interface.services.gRPC_service import UserService
 from pydantic import UUID4, BaseModel, Field
 
 
-class UpdateUserRequest(BaseModel):
-    """
-    Model that represents the request to update an existing user.
-
-    Attributes:
-        id (UUID4): The ID of the user.
-        user_username (str): The username of the user.
-        user_public_key (str): The public key of the user.
-    """
-
-    id: Annotated[UUID4, Field(title='ID', description='The ID of the user.')]
-    user_username: Annotated[
-        str, Field(title='Username', description='The username of the user.')
-    ]
-    user_public_key: Annotated[
-        str,
-        Field(title='Private Key', description='The public key of the user.'),
-    ]
-
-
 class User(BaseModel):
     """
     Model that represents a user.

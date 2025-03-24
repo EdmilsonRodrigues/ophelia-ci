@@ -3,5 +3,5 @@ Version: 0.8.1
 Architecture: amd64
 Maintainer: Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>
 Description: A Git server that anyone can install in their own infrastructure and use to mange their projects.
-Depends: git, openssh-client
+Depends: git, python3-toml, debconf-utils
 

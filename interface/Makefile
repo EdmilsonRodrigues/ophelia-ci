@@ -21,6 +21,7 @@ build:
 	mv dist/* ../dist
 
 build-deb:
+	make mypy
 	./fix_pyproject.bash
 	briefcase create
 	briefcase build

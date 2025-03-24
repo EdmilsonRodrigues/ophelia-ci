@@ -1,7 +1,16 @@
 from typing import Annotated
 
-from fastapi import APIRouter, File, Form, Request, UploadFile, status
+from fastapi import (
+    APIRouter,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+    status,
+)
 from fastapi.responses import HTMLResponse, RedirectResponse
+from ophelia_ci_interface.models.generals import OpheliaException
 from ophelia_ci_interface.routers.dependencies import Authentication, Template
 
 router = APIRouter(tags=['Authentication'])
@@ -53,10 +62,15 @@ async def login(
         redirects to the home page.
     """
 
-    token = authentication_service.authenticate(
-        username=username,
-        private_key=(await private_key.read()).decode('utf-8'),
-    )
+    try:
+        token = authentication_service.authenticate(
+            username=username,
+            private_key=(await private_key.read()).decode('utf-8'),
+        )
+    except OpheliaException as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e)
+        ) from e
     response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(key='session', value=token)
     return response

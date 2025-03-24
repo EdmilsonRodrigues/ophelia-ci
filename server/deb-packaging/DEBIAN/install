@@ -1,3 +1,4 @@
 usr/bin/ophelia-ci-server usr/bin/
-usr/lib/systemd/system/ophelia-ci-server.service usr/lib/systemd/system/
-etc/ophelia-ci/server-config.toml etc/ophelia-ci/
+lib/systemd/system/ophelia-ci-server.service lib/systemd/system/
+usr/lib/ophelia-ci-server/configure_toml.py usr/lib/ophelia-ci-server/
+usr/lib/ophelia-ci-server/config usr/lib/ophelia-ci-server/

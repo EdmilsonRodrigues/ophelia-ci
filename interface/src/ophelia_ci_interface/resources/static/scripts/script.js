@@ -103,25 +103,17 @@ function submitModal(event) {
       .catch(error => {
         console.error('Network error:', error);
       });
-  }
-  form.submit().then(response => {
-    if (response.ok) {
-      console.log('Form submitted successfully');
-      window.location.reload();
-    } else {
-      console.error('Failed to submit form');
-    }
-  })
-    .catch(error => {
-      console.error('Network error:', error);
-    });
+  } else {
+    form.submit()
 }
 
 function deleteObject(id) {
   fetch(window.location.href, {
-    method: 'DELETE', body: {
+    method: 'DELETE', body: JSON.stringify({
       id: id
-    },
+    }), headers: {
+      'Content-Type': 'application/json'
+    }
   })
     .then(response => {
       if (response.ok) {
