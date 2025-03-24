@@ -1,5 +1,28 @@
 #!/bin/sh
 set -e
 
+echo "Checking if /etc/ophelia-ci/client-config.toml exists..."  > /var/log/ophelia-ci-client.log
+if [ ! -f /etc/ophelia-ci/client-config.toml ]; then
+    echo "/etc/ophelia-ci/client-config.toml does not exist. Creating..."
+    cat <<EOF > /etc/ophelia-ci/client-config.toml
+[client]
+server = localhost:50051
+
+EOF
+    echo "/etc/ophelia-ci/client-config.toml created."  >> /var/log/ophelia-ci-client.log
+else
+    echo "/etc/ophelia-ci/client-config.toml exists."  >> /var/log/ophelia-ci-client.log
+fi
+
+echo "Running /var/lib/dpkg/info/ophelia-ci-client.config..."  >> /var/log/ophelia-ci-client.log
+/var/lib/dpkg/info/ophelia-ci-client.config
+if [ "$?" -ne 0 ]; then
+    echo "/var/lib/dpkg/info/ophelia-ci-client.config failed with exit code $?."   >> /var/log/ophelia-ci-client.log
+    exit 10
+fi
+echo "/var/lib/dpkg/info/ophelia-ci-client.config completed."  >> /var/log/ophelia-ci-client.log
+
 chown root:root /etc/ophelia-ci/client-config.toml
 chmod 644 /etc/ophelia-ci/client-config.toml
+
+exit 0

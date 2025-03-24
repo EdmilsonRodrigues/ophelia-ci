@@ -7,33 +7,21 @@ import toml
 
 def configure_toml(
     config_path,
-    server_port,
-    db_path,
-    expiration_time,
-    secret,
+    server_address,
     ssl_cert_file,
-    ssl_key_file,
 ):
     config_path = Path(config_path)
     try:
         with config_path.open('r', encoding='utf-8') as f:
             config = toml.load(f)
 
-        config['server'] |= {
-            'port': int(server_port),
-            'db_path': db_path,
-            'expiration_time': int(expiration_time),
+        config['client'] |= {
+            'server': server_address,
         }
-        if secret:
-            config['server']['secret'] = secret
 
-        elif 'secret' in config['server']:
-            del config['server']['secret']
-
-        if ssl_cert_file and ssl_key_file:
+        if ssl_cert_file:
             config.setdefault('ssl', {}).update({
                 'cert_file': ssl_cert_file,
-                'key_file': ssl_key_file,
             })
 
         elif 'ssl' in config:
@@ -48,10 +36,10 @@ def configure_toml(
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 8:
+    if len(sys.argv) != 4:
         print(
-            'Usage: configure_toml.py <config_path> <server_port> <db_path> '
-            '<expiration_time> <secret> <ssl_cert_file> <ssl_key_file>',
+            'Usage: configure_toml.py <config_path>'
+            ' <server_address> <ssl_cert_file>'
             f'\nIncorrect number of arguments: {sys.argv}',
             file=sys.stderr,
         )

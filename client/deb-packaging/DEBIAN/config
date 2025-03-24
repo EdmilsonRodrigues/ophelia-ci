@@ -1,0 +1,56 @@
+#!/bin/sh
+
+set -e
+
+. /usr/share/debconf/confmodule
+
+echo "Checking if /etc/ophelia-ci/client-config.toml exists..." >>/var/log/ophelia-ci-client.log
+if [ ! -f /etc/ophelia-ci/client-config.toml ]; then
+    echo "/etc/ophelia-ci/client-config.toml not found!" >>/var/log/ophelia-ci-client.log
+    exit 1
+fi
+echo "/etc/ophelia-ci/client-config.toml exists." >>/var/log/ophelia-ci-client.log
+
+echo "Prompting if the user wants to update the client config..." >>/var/log/ophelia-ci-client.log
+db_input ophelia-ci/update-config "false"
+db_go
+
+echo "Getting user's response..." >>/var/log/ophelia-ci-client.log
+db_get ophelia-ci/update-config
+update_config=$RET
+if [ "$update_config" = "false" ]; then
+    echo "User does not want to update the client config." >>/var/log/ophelia-ci-client.log
+    exit 0
+fi
+
+# Prompt for server address
+echo "Prompting for server address..." >> /var/log/ophelia-ci-client.log
+db_input ophelia-ci/server-address "localhost:50051"
+db_go
+
+# Prompt for ssl certificate file
+echo "Prompting for ssl certificate file..." >>/var/log/ophelia-ci-client.log
+db_input ophelia-ci/ssl-cert-file ""
+db_go
+
+echo "Getting server-address from debconf..." >>/var/log/ophelia-ci-client.log
+db_get ophelia-ci/server-address
+server_address=$(echo "$RET" | tr -d '"')
+echo "server-address: ${server_address}" >>/var/log/ophelia-ci-client.log
+
+echo "Getting ssl-cert-file from debconf..." >>/var/log/ophelia-ci-client.log
+db_get ophelia-ci/ssl-cert-file
+ssl_cert_file=$(echo "$RET" | tr -d '"')
+echo "ssl-cert-file: $ssl_cert_file" >>/var/log/ophelia-ci-client.log
+
+# Configure toml file
+echo "Running configure_toml.py..." >>/var/log/ophelia-ci-client.log
+/usr/lib/ophelia-ci-client/configure_toml.py /etc/ophelia-ci/client-config.toml "${server_address}" "${ssl_cert_file}"
+if [ "$?" -ne 0 ]; then
+    echo "configure_toml.py failed with exit code $?." >>/var/log/ophelia-ci-client.log
+    exit 1
+fi
+echo "configure_toml.py completed." >>/var/log/ophelia-ci-client.log
+
+exit 0
+

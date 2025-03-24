@@ -1,4 +1,4 @@
-ophelia-ci-server (0.8.0ubuntu2) UNRELEASED; urgency=medium
+ophelia-ci-server (0.9.0) UNRELEASED; urgency=medium
 
   * Added authentication and SSL to server
   * Add new operations to changelog make
@@ -6,8 +6,9 @@ ophelia-ci-server (0.8.0ubuntu2) UNRELEASED; urgency=medium
   * Added unique key to first registers
   * Added GoDocs
   * Fixed authentication
+  * Finished bugs in authentication
 
- -- Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>  Sat, 22 Mar 2025 18:41:34 +0000
+ -- Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>  Mon, 24 Mar 2025 18:28:11 +0000
 
 ophelia-ci-server (0.5.0ubuntu6) UNRELEASED; urgency=medium
 

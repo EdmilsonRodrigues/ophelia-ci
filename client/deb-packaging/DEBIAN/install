@@ -1,2 +1,2 @@
 usr/bin/ophelia-ci usr/bin/
-etc/ophelia-ci/client-config.toml etc/ophelia-ci/
+usr/lib/ophelia-ci-client/configure_toml.py usr/lib/ophelia-ci-client/

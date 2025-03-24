@@ -1,0 +1,96 @@
+#!/bin/sh
+
+set -e
+
+. /usr/share/debconf/confmodule
+
+echo "Checking if /etc/ophelia-ci/server-config.toml exists..." >>/var/log/ophelia-ci-server.log
+if [ ! -f /etc/ophelia-ci/server-config.toml ]; then
+    echo "/etc/ophelia-ci/server-config.toml not found!" >>/var/log/ophelia-ci-server.log
+    exit 1
+fi
+echo "/etc/ophelia-ci/server-config.toml exists." >>/var/log/ophelia-ci-server.log
+
+echo "Prompting if the user wants to update the server config..." >>/var/log/ophelia-ci-server.log
+db_input ophelia-ci/update-config "false"
+db_go
+
+echo "Getting user's response..." >>/var/log/ophelia-ci-server.log
+db_get ophelia-ci/update-config
+update_config=$RET
+if [ "$update_config" = "false" ]; then
+    echo "User does not want to update the server config." >>/var/log/ophelia-ci-server.log
+    exit 0
+fi
+
+# Prompt for server port
+echo "Prompting for server port..." >>/var/log/ophelia-ci-server.log
+db_input ophelia-ci/server-port "50051"
+db_go
+
+# Prompt for database path
+echo "Prompting for database path..." >>/var/log/ophelia-ci-server.log
+db_input ophelia-ci/db-path "/var/lib/ophelia/ophelia.db"
+db_go
+
+# Prompt for expiration time
+echo "Prompting for expiration time..." >>/var/log/ophelia-ci-server.log
+db_input ophelia-ci/expiration-time "30"
+db_go
+
+# Prompt for secret
+echo "Prompting for secret..." >>/var/log/ophelia-ci-server.log
+db_input ophelia-ci/secret ""
+db_go
+
+# Prompt for ssl certificate file
+echo "Prompting for ssl certificate file..." >>/var/log/ophelia-ci-server.log
+db_input ophelia-ci/ssl-cert-file ""
+db_go
+
+# Prompt for ssl key file
+echo "Prompting for ssl key file..." >>/var/log/ophelia-ci-server.log
+db_input ophelia-ci/ssl-key-file ""
+db_go
+
+# Get the values
+echo "Getting server-port from debconf..." >>/var/log/ophelia-ci-server.log
+db_get ophelia-ci/server-port
+server_port=$RET
+echo "server-port: $server_port" >>/var/log/ophelia-ci-server.log
+
+echo "Getting db-path from debconf..." >>/var/log/ophelia-ci-server.log
+db_get ophelia-ci/db-path
+db_path=$(echo "$RET" | tr -d '"')
+echo "db-path: $db_path" >>/var/log/ophelia-ci-server.log
+
+echo "Getting expiration-time from debconf..." >>/var/log/ophelia-ci-server.log
+db_get ophelia-ci/expiration-time
+expiration_time=$RET
+echo "expiration-time: $expiration_time" >>/var/log/ophelia-ci-server.log
+
+echo "Getting secret from debconf..." >>/var/log/ophelia-ci-server.log
+db_get ophelia-ci/secret
+secret=$(echo "$RET" | tr -d '"')
+echo "secret: $secret" >>/var/log/ophelia-ci-server.log
+
+echo "Getting ssl-cert-file from debconf..." >>/var/log/ophelia-ci-server.log
+db_get ophelia-ci/ssl-cert-file
+ssl_cert_file=$(echo "$RET" | tr -d '"')
+echo "ssl-cert-file: $ssl_cert_file" >>/var/log/ophelia-ci-server.log
+
+echo "Getting ssl-key-file from debconf..." >>/var/log/ophelia-ci-server.log
+db_get ophelia-ci/ssl-key-file
+ssl_key_file=$(echo "$RET" | tr -d '"')
+echo "ssl-key-file: $ssl_key_file" >>/var/log/ophelia-ci-server.log
+
+# Configure toml file
+echo "Running configure_toml.py..." >>/var/log/ophelia-ci-server.log
+/usr/lib/ophelia-ci-server/configure_toml.py /etc/ophelia-ci/server-config.toml "$server_port" "${ssl_cert_file}" "${ssl_key_file}"
+if [ "$?" -ne 0 ]; then
+    echo "configure_toml.py failed with exit code $?." >>/var/log/ophelia-ci-server.log
+    exit 1
+fi
+echo "configure_toml.py completed." >>/var/log/ophelia-ci-server.log
+
+exit 0

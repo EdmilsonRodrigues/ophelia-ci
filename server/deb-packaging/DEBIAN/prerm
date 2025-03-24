@@ -11,6 +11,7 @@ systemctl disable ophelia-ci-server.service || {
 if [ "$1" = "remove" ] && [ "$2" = "purge" ]; then
     if id -u ophelia > /dev/null 2> /dev/null; then
         rm -rf /var/lib/ophelia
+        rm -rf /etc/ophelia-ci/server-config.toml
         userdel -r ophelia
     fi
 fi

@@ -1,7 +1,10 @@
 #!/bin/sh
 set -e
 
+
+echo "Checking if /etc/ophelia-ci/server-config.toml exists..."  > /var/log/ophelia-ci-server.log
 if [ ! -f /etc/ophelia-ci/server-config.toml ]; then
+    echo "/etc/ophelia-ci/server-config.toml does not exist. Creating..."
     cat <<EOF > /etc/ophelia-ci/server-config.toml
 [server]
 port = 50051
@@ -9,29 +12,92 @@ db_path = "/var/lib/ophelia/ophelia.db"
 expiration_time = 30
 
 EOF
+    echo "/etc/ophelia-ci/server-config.toml created."  >> /var/log/ophelia-ci-server.log
+else
+    echo "/etc/ophelia-ci/server-config.toml exists."  >> /var/log/ophelia-ci-server.log
 fi
 
+echo "Checking if ophelia group exists..."  >> /var/log/ophelia-ci-server.log
 if ! id -g ophelia > /dev/null 2> /dev/null; then
+    echo "ophelia group does not exist. Creating..."  >> /var/log/ophelia-ci-server.log
     addgroup --system ophelia
+    echo "ophelia group created."  >> /var/log/ophelia-ci-server.log
+else
+    echo "ophelia group exists."  >> /var/log/ophelia-ci-server.log
 fi
 
+echo "Checking if ophelia user exists..."  >> /var/log/ophelia-ci-server.log
 if ! id -u ophelia > /dev/null 2> /dev/null; then
+    echo "ophelia user does not exist. Creating..."  >> /var/log/ophelia-ci-server.log
     adduser --system --ingroup ophelia --home /var/lib/ophelia ophelia
+    echo "ophelia user created."  >> /var/log/ophelia-ci-server.log
+else
+    echo "ophelia user exists."  >> /var/log/ophelia-ci-server.log
 fi
 
+echo "Checking if /var/lib/ophelia directory exists..."  >> /var/log/ophelia-ci-server.log
 if [ ! -d /var/lib/ophelia ]; then
+    echo "/var/lib/ophelia directory does not exist. Creating..."  >> /var/log/ophelia-ci-server.log
     mkdir -p /var/lib/ophelia
+    echo "/var/lib/ophelia directory created."  >> /var/log/ophelia-ci-server.log
+else
+    echo "/var/lib/ophelia directory exists."  >> /var/log/ophelia-ci-server.log
 fi
 
-/usr/lib/ophelia-ci-server/config
+echo "Running /var/lib/dpkg/info/ophelia-ci-server.config..."  >> /var/log/ophelia-ci-server.log
+/var/lib/dpkg/info/ophelia-ci-server.config
+if [ "$?" -ne 0 ]; then
+    echo "/var/lib/dpkg/info/ophelia-ci-server.config failed with exit code $?."   >> /var/log/ophelia-ci-server.log
+    exit 10
+fi
+echo "/var/lib/dpkg/info/ophelia-ci-server.config completed."  >> /var/log/ophelia-ci-server.log
 
+echo "Changing ownership of /var/lib/ophelia..."  >> /var/log/ophelia-ci-server.log
 chown ophelia:ophelia /var/lib/ophelia
+if [ "$?" -ne 0 ]; then
+    echo "chown failed with exit code $?."   >> /var/log/ophelia-ci-server.log
+    exit 10
+fi
+echo "Ownership of /var/lib/ophelia changed."  >> /var/log/ophelia-ci-server.log
+
+echo "Changing permissions of /var/lib/ophelia..."  >> /var/log/ophelia-ci-server.log
 chmod 750 /var/lib/ophelia
+if [ "$?" -ne 0 ]; then
+    echo "chmod failed with exit code $?." >> /var/log/ophelia-ci-server.log
+    exit 10
+fi
+echo "Permissions of /var/lib/ophelia changed."  >> /var/log/ophelia-ci-server.log
 
+echo "Changing ownership of /etc/ophelia-ci/server-config.toml..."  >> /var/log/ophelia-ci-server.log
 chown root:ophelia /etc/ophelia-ci/server-config.toml
-chmod 644 /etc/ophelia-ci/server-config.toml
+if [ "$?" -ne 0 ]; then
+    echo "chown failed with exit code $?."   >> /var/log/ophelia-ci-server.log
+    exit 10
+fi
+echo "Ownership of /etc/ophelia-ci/server-config.toml changed."  >> /var/log/ophelia-ci-server.log
 
+echo "Changing permissions of /etc/ophelia-ci/server-config.toml..."  >> /var/log/ophelia-ci-server.log
+chmod 644 /etc/ophelia-ci/server-config.toml
+if [ "$?" -ne 0 ]; then
+    echo "chmod failed with exit code $?."  >> /var/log/ophelia-ci-server.log
+    exit 10
+fi
+echo "Permissions of /etc/ophelia-ci/server-config.toml changed."  >> /var/log/ophelia-ci-server.log
+
+echo "Enabling ophelia-ci-server.service..."  >> /var/log/ophelia-ci-server.log
 systemctl enable ophelia-ci-server.service
+if [ "$?" -ne 0 ]; then
+    echo "systemctl enable failed with exit code $?."  >> /var/log/ophelia-ci-server.log
+    exit 10
+fi
+echo "ophelia-ci-server.service enabled."  >> /var/log/ophelia-ci-server.log
+
+echo "Starting ophelia-ci-server.service..."  >> /var/log/ophelia-ci-server.log
 systemctl start ophelia-ci-server.service
+if [ "$?" -ne 0 ]; then
+    echo "systemctl start failed with exit code $?."  >> /var/log/ophelia-ci-server.log
+    exit 10
+fi
+echo "ophelia-ci-server.service started."  >> /var/log/ophelia-ci-server.log
 
 exit 0

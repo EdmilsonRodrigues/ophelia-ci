@@ -1,5 +1,3 @@
-# DEBIAN/templates
-
 Template: ophelia-ci/server-port
 Type: integer
 Default: 50051

@@ -1,2 +1,8 @@
 #!/bin/sh
 set -e
+
+if [ "$1" = "remove" ] && [ "$2" = "purge" ]; then
+    rm -rf /etc/ophelia-ci/client-config.toml
+fi
+
+exit 0

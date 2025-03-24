@@ -1,6 +1,6 @@
 [project]
 name = "ophelia-ci-interface"
-version = "0.8.0"
+version = "1.0.0"
 description = "This is a Python project to create a web page interface for an Ophelia CI server."
 readme = "README.md"
 requires-python = ">=3.12, <3.13"
