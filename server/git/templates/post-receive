@@ -1,0 +1,8 @@
+#!/bin/sh
+
+while read oldrev newrev ref; do
+    branch=$(git rev-parse --symbolic --abbrev-ref $ref)
+
+    echo "Received push!"
+    # I will add this soon
+done

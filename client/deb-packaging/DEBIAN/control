@@ -1,6 +1,0 @@
-Package: ophelia-ci-client
-Version: 0.5.0
-Architecture: amd64
-Maintainer: Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>
-Description: The CLI client for the Ophelia CI platform. Can be used to access any Ophelia CI server.
-Depends: python3-toml, debconf-utils

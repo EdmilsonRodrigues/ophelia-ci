@@ -290,7 +290,7 @@ class AuthenticationService(ServiceMixin):
 
     def authenticate_with_unique_key(self, unique_key: str):
         """
-        Authenticate a user with the unique key created by the 
+        Authenticate a user with the unique key created by the
         server on startup.
 
         :param unique_key: the unique key created by the server on startup

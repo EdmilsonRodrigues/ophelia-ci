@@ -84,9 +84,9 @@ func main() {
 // It returns an empty response to indicate the server is running and reachable.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values.
-// - req: An empty request message as defined in the protobuf service definition.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values.
+//   - req: An empty request message as defined in the protobuf service definition.
 //
 // Returns:
 // - *pb.Empty: An empty response message indicating the server is healthy.
