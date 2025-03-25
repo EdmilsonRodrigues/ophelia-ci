@@ -290,9 +290,10 @@ class AuthenticationService(ServiceMixin):
 
     def authenticate_with_unique_key(self, unique_key: str):
         """
-        Authenticate a user with their unique key.
+        Authenticate a user with the unique key created by the 
+        server on startup.
 
-        :param unique_key: the unique key of the user
+        :param unique_key: the unique key created by the server on startup
         :return: the token of the user if the authentication is successful
         :raises OpheliaException: if the authentication failed
         """
