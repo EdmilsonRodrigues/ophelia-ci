@@ -75,18 +75,18 @@ func handleAuthCommands(ctx context.Context, client pb.AuthServiceClient, comman
 // login authenticates a user using their username and private key, and returns a JWT token if the authentication is successful.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values.
-// - client: The client to use for the authentication request.
-// - username: The username of the user to authenticate.
-// - privateKey: The path to the private key file of the user to authenticate.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values.
+//   - client: The client to use for the authentication request.
+//   - username: The username of the user to authenticate.
+//   - privateKey: The path to the private key file of the user to authenticate.
 //
 // Returns:
 // - string: The JWT token if the authentication is successful, or an empty string if the authentication fails.
 // - error: An error if the authentication fails.
 func login(ctx context.Context, client pb.AuthServiceClient, username, privateKey string) (string, error) {
 	if username == "" || privateKey == "" {
-		return "", fmt.Errorf("Username and private key are required.")
+		return "", fmt.Errorf("username and private key are required")
 	}
 
 	privateKeyBytes, err := os.ReadFile(privateKey)
@@ -101,7 +101,7 @@ func login(ctx context.Context, client pb.AuthServiceClient, username, privateKe
 
 	challengeResponse, err := client.AuthenticationChallenge(ctx, &pb.AuthenticationChallengeRequest{Username: username})
 	if err != nil {
-		return "", fmt.Errorf("Failed to get authentication challenge: %v", err)
+		return "", fmt.Errorf("failed to get authentication challenge: %v", err)
 	}
 
 	challengeBytes, err := base64.StdEncoding.DecodeString(challengeResponse.Challenge)
@@ -131,17 +131,17 @@ func login(ctx context.Context, client pb.AuthServiceClient, username, privateKe
 // uniqueKeyLogin authenticates a user using a unique key, and returns a JWT token if the authentication is successful.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values.
-// - client: The client to use for the authentication request.
-// - uniqueKey: The unique key for authentication.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values.
+//   - client: The client to use for the authentication request.
+//   - uniqueKey: The unique key for authentication.
 //
 // Returns:
 // - string: The JWT token if the authentication is successful, or an empty string if the authentication fails.
 // - error: An error if the authentication fails.
 func uniqueKeyLogin(ctx context.Context, client pb.AuthServiceClient, uniqueKey string) (string, error) {
 	if uniqueKey == "" {
-		return "", fmt.Errorf("Unique key is required.")
+		return "", fmt.Errorf("unique key is required")
 	}
 
 	authResponse, err := client.UniqueKeyLogin(ctx, &pb.UniqueKeyLoginRequest{UniqueKey: uniqueKey})
@@ -159,8 +159,8 @@ func uniqueKeyLogin(ctx context.Context, client pb.AuthServiceClient, uniqueKey 
 // getToken retrieves the JWT token from the environment variable defined by tokenVariable.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values. This parameter is not used.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values. This parameter is not used.
 //
 // Returns:
 // - string: The JWT token if it is present in the environment variable, or an empty string if it is not.
@@ -176,8 +176,8 @@ func getToken(ctx context.Context) (string, bool) {
 // authenticateContext adds a JWT token to the outgoing context's metadata for authorization.
 //
 // Parameters:
-// - ctx: The context to which the JWT token is to be added. It carries deadlines,
-//   cancellation signals, and other request-scoped values.
+//   - ctx: The context to which the JWT token is to be added. It carries deadlines,
+//     cancellation signals, and other request-scoped values.
 //
 // Returns:
 // - context.Context: The context with the JWT token added to its metadata.

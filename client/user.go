@@ -10,6 +10,12 @@ import (
 	pb "github.com/EdmilsonRodrigues/ophelia-ci"
 )
 
+// handleUserCommands parses command line arguments for the user command and makes the right call to the UserServiceClient.
+// The commands available are:
+// - list: Retrieves a list of all users
+// - show: Retrieves a user by ID or username
+// - create: Creates a new user
+// - delete: Deletes a user by ID
 func handleUserCommands(ctx context.Context, client pb.UserServiceClient, command string, args []string) {
 	ctx = authenticateContext(ctx)
 	switch command {
@@ -38,6 +44,16 @@ func handleUserCommands(ctx context.Context, client pb.UserServiceClient, comman
 	}
 }
 
+// ListUsers retrieves and prints a list of all users.
+//
+// This function sends a request to the UserServiceClient to list all
+// existing users. It displays each user's ID and username. If there is an
+// error during the request, the function logs the error and terminates the
+// program.
+//
+// Parameters:
+// - ctx: The context for the request, used for cancellation and deadlines.
+// - client: The UserServiceClient used to access the user service.
 func ListUsers(ctx context.Context, client pb.UserServiceClient) {
 	res, err := client.ListUser(ctx, &pb.Empty{})
 	if err != nil {
@@ -50,6 +66,20 @@ func ListUsers(ctx context.Context, client pb.UserServiceClient) {
 	fmt.Println("")
 }
 
+// GetUser retrieves and prints a user by either its ID or username.
+//
+// The request must contain either a non-empty ID or a non-empty username.
+// The ID is used to identify the user to be retrieved by ID.
+// The username is used to identify the user to be retrieved by username.
+//
+// The response will contain the user information.
+// If there is an error during the request, the function logs the error and terminates the program.
+//
+// Parameters:
+// - ctx: The context for the request, used for cancellation and deadlines.
+// - client: The UserServiceClient used to access the user service.
+// - id: The ID of the user to be retrieved.
+// - name: The username of the user to be retrieved.
 func GetUser(ctx context.Context, client pb.UserServiceClient, id, name string) {
 	res, err := client.GetUser(ctx, &pb.GetUserRequest{Id: id, Username: name})
 	if err != nil {
@@ -59,6 +89,20 @@ func GetUser(ctx context.Context, client pb.UserServiceClient, id, name string) 
 	fmt.Printf("ID: %s, Username: %s\n\n", res.Id, res.Username)
 }
 
+// CreateUser creates a new user with the given information.
+//
+// The request must contain the username and public key of the user to be created.
+// The username is used to identify the user.
+// The public key is used to store the user's public key.
+//
+// The response will contain the created user information.
+// If there is an error during the request, the function logs the error and terminates the program.
+//
+// Parameters:
+// - ctx: The context for the request, used for cancellation and deadlines.
+// - client: The UserServiceClient used to access the user service.
+// - username: The username of the user to be created.
+// - publicKey: The path to the public key file of the user to be created.
 func CreateUser(ctx context.Context, client pb.UserServiceClient, username, publicKey string) {
 	publicKeyString, err := readPublicKey(publicKey)
 	if err != nil {
@@ -72,6 +116,21 @@ func CreateUser(ctx context.Context, client pb.UserServiceClient, username, publ
 	fmt.Printf("ID: %s, Username: %s\n\n", res.Id, res.Username)
 }
 
+// UpdateUser updates a user with the given information.
+//
+// The request must contain the ID, username and public key of the user to be updated.
+// The ID is used to identify the user to be updated.
+// The username and public key are used to update the user information.
+//
+// The response will contain the updated user information.
+// If there is an error during the request, the function logs the error and terminates the program.
+//
+// Parameters:
+// - ctx: The context for the request, used for cancellation and deadlines.
+// - client: The UserServiceClient used to access the user service.
+// - id: The ID of the user to be updated.
+// - username: The username of the user to be updated.
+// - publicKey: The path to the public key file of the user to be updated.
 func UpdateUser(ctx context.Context, client pb.UserServiceClient, id, username, publicKey string) {
 	publicKeyString, err := readPublicKey(publicKey)
 	if err != nil {
@@ -85,6 +144,15 @@ func UpdateUser(ctx context.Context, client pb.UserServiceClient, id, username, 
 	fmt.Printf("ID: %s, Username: %s\n\n", res.Id, res.Username)
 }
 
+// DeleteUser deletes a user by ID.
+//
+// The request must contain the ID of the user to be deleted.
+// If there is an error during the request, the function logs the error and terminates the program.
+//
+// Parameters:
+// - ctx: The context for the request, used for cancellation and deadlines.
+// - client: The UserServiceClient used to access the user service.
+// - id: The ID of the user to be deleted.
 func DeleteUser(ctx context.Context, client pb.UserServiceClient, id string) {
 	_, err := client.DeleteUser(ctx, &pb.DeleteUserRequest{Id: id})
 	if err != nil {
