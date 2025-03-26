@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     GRPC_SERVER: str = 'localhost:50051'
     DEBUG: bool = False
+    UNPACKED: bool = False
     LOG_LEVEL: Literal['DEBUG', 'INFO', 'WARNING', 'ERROR'] = 'INFO'
     SSL_KEYFILE: Path | None = None
     SSL_CERTFILE: Path | None = None
@@ -23,7 +24,7 @@ class Settings(BaseSettings):
 
 base_path = (
     Path('ophelia_ci_interface')
-    if Settings().DEBUG
+    if Settings().UNPACKED
     else Path('/usr/lib/ophelia-ci-interface/app/ophelia_ci_interface')
 )
 

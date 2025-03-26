@@ -1,3 +1,5 @@
+TAG ?= latest
+
 .PHONY: lint mypy run build build-deb
 lint:
 	ruff format
@@ -9,7 +11,11 @@ mypy:
 
 run:
 	cd src && \
-	OPHELIA_CI_DEBUG=True uvicorn ophelia_ci_interface.main:app --reload
+	OPHELIA_CI_UNPACKED=True uvicorn ophelia_ci_interface.main:app --reload
+
+docker:
+	docker build -t edmilsonrodrigues/ophelia-ci-interface:$(TAG) -f Dockerfile ..
+
 
 build:
 	./fix_pyproject.bash

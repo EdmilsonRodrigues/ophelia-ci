@@ -87,3 +87,11 @@ jobs:
           cd client
           VERSION=$(cat .version)
           make package_docker TAG=$VERSION
+
+      - name: Build Server Docker Image
+        run: |
+          cd server
+          VERSION=$(cat .version)
+          make package_docker TAG=$VERSION
+        
+        
