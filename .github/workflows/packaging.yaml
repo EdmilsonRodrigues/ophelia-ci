@@ -8,7 +8,7 @@ jobs:
   test:
     uses: ./.github/workflows/tests.yaml
 
-  build:
+  build-deb:
     needs: test
     runs-on: ubuntu-latest
 
@@ -51,19 +51,39 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
       
-      - name: Install flatpak
-        run: |
-          sudo apt-get update
-          sudo apt-get install flatpak flatpak-builder
-
-      - name: Build
+      - name: Build Deb
         run: |
           source .venv/bin/activate
           cd interface
-          make build
+          make build-deb
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+          generate_release_notes: true
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
+
+  publish-docker:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.24
+      
+      - name: Build Client Docker Image
+        run: |
+          cd client
+          VERSION=$(cat .version)
+          make package_docker

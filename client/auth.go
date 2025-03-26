@@ -15,7 +15,6 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const tokenVariable = "OPHELIA_CI_CLIENT_TOKEN"
 
 // handleAuthCommands handles authentication commands.
 //
@@ -80,7 +79,7 @@ func printAuthHelp() {
 }
 
 func setToken(token string) {
-	config  := LoadConfig()
+	config := LoadConfig()
 	config.Client.AuthToken = token
 	SaveConfig(config)
 }
