@@ -86,4 +86,4 @@ jobs:
         run: |
           cd client
           VERSION=$(cat .version)
-          make package_docker
+          make package_docker TAG=$VERSION

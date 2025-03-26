@@ -81,7 +81,7 @@ func printAuthHelp() {
 func setToken(token string) {
 	config := LoadConfig()
 	config.Client.AuthToken = token
-	SaveConfig(config)
+	pb.SaveConfig(configFile, config)
 }
 
 // login authenticates a user using their username and private key, and returns a JWT token if the authentication is successful.

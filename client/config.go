@@ -2,10 +2,8 @@ package main
 
 import (
 	"os"
-	"strings"
-	"sync"
 
-	"github.com/pelletier/go-toml/v2"
+	pb "github.com/EdmilsonRodrigues/ophelia-ci"
 )
 
 type Config struct {
@@ -20,7 +18,6 @@ type Config struct {
 
 var (
 	configCache Config
-	once        sync.Once
 )
 
 const configFile = "/etc/ophelia-ci/client-config.toml"
@@ -32,17 +29,19 @@ const configFile = "/etc/ophelia-ci/client-config.toml"
 // returns the cached configuration.
 func LoadConfig() Config {
 	var err error
-	if checkRunningFromImage() {
+	if pb.CheckRunningFromImage() {
 		return loadConfigFromEnv()
 	}
 
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		config := loadConfigFromEnv()
-		SaveConfig(config)
+		if err := pb.SaveConfig(configFile, config); err != nil {
+			panic(err)
+		}
 		return config
 	}
 
-	configCache, err = loadConfigFromFile()
+	configCache, err = pb.LoadConfigFromFile(configFile, configCache)
 	if err != nil {
 		panic(err)
 	}
@@ -50,47 +49,16 @@ func LoadConfig() Config {
 	return configCache
 }
 
-func loadConfigFromFile() (config Config, err error) {
-	once.Do(func() {
-		var data []byte
-		data, err = os.ReadFile(configFile)
-		if err != nil {
-			return
-		}
-
-		if err = toml.Unmarshal(data, &config); err != nil {
-			return
-		}
-	})
-	return
-}
-
+// loadConfigFromEnv loads the client configuration from environment variables.
+// It retrieves the server address, authentication token, and SSL key file path
+// from the corresponding environment variables and populates the Config struct.
 func loadConfigFromEnv() (config Config) {
-	config.Client.Server = os.Getenv("OPHELIA_CI_SERVER")
+	server := os.Getenv("OPHELIA_CI_SERVER")
+	if server == "" {
+		server = "localhost:50051"
+	}
+	config.Client.Server = server
 	config.Client.AuthToken = os.Getenv("OPHELIA_CI_AUTH_TOKEN")
 	config.SSL.KeyFile = os.Getenv("OPHELIA_CI_SSL_KEY_FILE")
 	return
-}
-
-func checkRunningFromImage() bool {
-	return os.Getenv("OPHELIA_CI_FROM_IMAGE") != ""
-}
-
-// SaveConfig saves the given configuration to a TOML file located at
-// configFile. If marshalling the configuration to TOML data or writing the
-// file fails, the function panics.
-func SaveConfig(config Config) {
-	if checkRunningFromImage() {
-		return
-	}
-
-	data := new(strings.Builder)
-	enc := toml.NewEncoder(data)
-	if err := enc.Encode(config); err != nil {
-		panic(err)
-	}
-
-	if err := os.WriteFile(configFile, []byte(data.String()), 0644); err != nil {
-		panic(err)
-	}
 }
