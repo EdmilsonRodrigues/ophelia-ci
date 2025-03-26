@@ -32,6 +32,9 @@ func handleAuthCommands(ctx context.Context, client pb.AuthServiceClient, comman
 	var token string
 	var err error
 	switch command {
+	case "--help":
+		printAuthHelp()
+		os.Exit(0)
 	case "login":
 		ensureArgsLength(args, 4, "Wrong number of arguments\nUsage: ophelia-ci auth login --username <username> --private-key <private-key>")
 
@@ -58,18 +61,28 @@ func handleAuthCommands(ctx context.Context, client pb.AuthServiceClient, comman
 		}
 
 	default:
-		fmt.Println("Invalid auth command. Use 'login' or 'unique'.")
-		os.Exit(1)
+		log.Fatalln("Invalid auth command. Use 'login' or 'unique'.")
 	}
 	if token == "" {
-		fmt.Println("Login failed")
-		os.Exit(1)
+		log.Fatalf("Login failed")
 	}
-	err = os.Setenv(tokenVariable, token)
-	if err != nil {
-		log.Fatalf("Failed to set token environment variable: %v", err)
-	}
+	log.Printf("Token: %s\n", token)
+
+	setToken(token)
 	fmt.Println("Login successful")
+}
+
+func printAuthHelp() {
+	fmt.Println("Usage: ophelia-ci auth <command>")
+	fmt.Println("Commands:")
+	fmt.Println("	login	Authenticate a user using their username and private key")
+	fmt.Println("	unique	Authenticate a user using the server unique key")
+}
+
+func setToken(token string) {
+	config  := LoadConfig()
+	config.Client.AuthToken = token
+	SaveConfig(config)
 }
 
 // login authenticates a user using their username and private key, and returns a JWT token if the authentication is successful.
@@ -158,19 +171,15 @@ func uniqueKeyLogin(ctx context.Context, client pb.AuthServiceClient, uniqueKey 
 
 // getToken retrieves the JWT token from the environment variable defined by tokenVariable.
 //
-// Parameters:
-//   - ctx: The context for the request, which carries deadlines, cancellation signals,
-//     and other request-scoped values. This parameter is not used.
-//
 // Returns:
 // - string: The JWT token if it is present in the environment variable, or an empty string if it is not.
 // - bool: true if a token is present, and false otherwise.
-func getToken(ctx context.Context) (string, bool) {
-	token := os.Getenv(tokenVariable)
-	if token == "" {
+func getToken() (string, bool) {
+	config := LoadConfig()
+	if config.Client.AuthToken == "" {
 		return "", false
 	}
-	return token, true
+	return config.Client.AuthToken, true
 }
 
 // authenticateContext adds a JWT token to the outgoing context's metadata for authorization.
@@ -185,7 +194,7 @@ func getToken(ctx context.Context) (string, bool) {
 // If no token is found in the environment variable, the function prints an error
 // message and exits the program.
 func authenticateContext(ctx context.Context) context.Context {
-	token, ok := getToken(ctx)
+	token, ok := getToken()
 	if !ok {
 		fmt.Println("No token found")
 		os.Exit(1)

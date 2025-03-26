@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-VERSION = '0.7.0'
+VERSION = '1.0.0'
 GITIGNORE_OPTIONS = ['None', 'python', 'go']
 
 

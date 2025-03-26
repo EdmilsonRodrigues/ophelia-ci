@@ -21,6 +21,8 @@ import (
 func handleRepoCommands(ctx context.Context, client pb.RepositoryServiceClient, command string, args []string) {
 	ctx = authenticateContext(ctx)
 	switch command {
+	case "--help":
+		printRepoHelp()
 	case "list":
 		ensureArgsLength(args, 0, "Too many arguments\nUsage: ophelia-ci repo list")
 		ListRepositories(ctx, client)
@@ -57,6 +59,16 @@ func handleRepoCommands(ctx context.Context, client pb.RepositoryServiceClient, 
 		fmt.Println("Invalid repo command. Use: list, show, update, create, delete")
 		os.Exit(1)
 	}
+}
+
+func printRepoHelp() {
+	fmt.Println("Usage: ophelia-ci repo <command> [arguments]")
+	fmt.Println("Commands:")
+	fmt.Println("	list	List all repositories")
+	fmt.Println("	show	Show information about a repository by ID or name")
+	fmt.Println("	update	Update a repository by ID")
+	fmt.Println("	create	Create a new repository")
+	fmt.Println("	delete	Delete a repository by ID")
 }
 
 // ListRepositories retrieves and prints a list of all repositories.

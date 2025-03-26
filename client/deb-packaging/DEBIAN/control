@@ -1,0 +1,5 @@
+Package: ophelia-ci-client
+Version: 1.0.0
+Architecture: amd64
+Maintainer: Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>
+Description: The CLI client for the ophelia-ci-server.

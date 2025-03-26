@@ -19,11 +19,13 @@ import (
 func handleUserCommands(ctx context.Context, client pb.UserServiceClient, command string, args []string) {
 	ctx = authenticateContext(ctx)
 	switch command {
+	case "--help":
+		printUserHelp()
 	case "list":
 		ensureArgsLength(args, 0, "Too many arguments\nUsage: ophelia-ci user list")
 		ListUsers(ctx, client)
 	case "show":
-		ensureArgsLength(args, 4, "Wrong number of arguments\nUsage: ophelia-ci user show --id <id>\nUsage: ophelia-ci user show --username <username>")
+		ensureArgsLength(args, 2, "Wrong number of arguments\nUsage: ophelia-ci user show --id <id>\nUsage: ophelia-ci user show --username <username>")
 		getCmd := flag.NewFlagSet("show", flag.ExitOnError)
 		getID := getCmd.String("id", "", "User ID")
 		getUsername := getCmd.String("username", "", "User Username")
@@ -36,12 +38,30 @@ func handleUserCommands(ctx context.Context, client pb.UserServiceClient, comman
 		createPublicKey := createCmd.String("public-key", "", "User Public Key")
 		createCmd.Parse(args)
 		CreateUser(ctx, client, *createUsername, *createPublicKey)
+	case "update":
+		ensureArgsLength(args, 6, "Wrong number of arguments\nUsage: ophelia-ci user update --id <id> --username <username> --public-key <public-key>")
+		updateCmd := flag.NewFlagSet("update", flag.ExitOnError)
+		updateID := updateCmd.String("id", "", "User ID")
+		updateUsername := updateCmd.String("username", "", "User Username")
+		updatePublicKey := updateCmd.String("public-key", "", "User Public Key")
+		updateCmd.Parse(args)
+		UpdateUser(ctx, client, *updateID, *updateUsername, *updatePublicKey)
 	case "delete":
 		ensureArgsLength(args, 2, "Wrong number of arguments\nUsage: ophelia-ci user delete --id <id>")
 	default:
 		fmt.Println("Invalid user command")
 		os.Exit(1)
 	}
+}
+
+func printUserHelp() {
+	fmt.Println("Usage: ophelia-ci user <command> [arguments]")
+	fmt.Println("Commands:")
+	fmt.Println("	list	List all users")
+	fmt.Println("	show	Show information about a user by ID or username")
+	fmt.Println("	create	Create a new user")
+	fmt.Println("	update	Update a user by ID")
+	fmt.Println("	delete	Delete a user by ID")
 }
 
 // ListUsers retrieves and prints a list of all users.

@@ -3,4 +3,4 @@ Version: 0.9.0
 Architecture: amd64
 Maintainer: Edmilson Rodrigues <edmilson.monteiro.rodrigues@gmail.com>
 Description: A Git server that anyone can install in their own infrastructure and use to mange their projects.
-Depends: git, python3-toml, debconf-utils, ophelia-ci-client
+Depends: git, ophelia-ci-client

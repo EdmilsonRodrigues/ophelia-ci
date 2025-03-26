@@ -32,26 +32,56 @@ func main() {
 	}
 	defer conn.Close()
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	if len(os.Args) < 2 {
+		printOpheliaHelp()
+		os.Exit(1)
+	}
+
+	service := os.Args[1]
+
+	if len(os.Args) < 3 {
+		handleCommands(ctx, conn, service, "--help", []string{})
+		os.Exit(1)
+	}
+
+	handleCommands(ctx, conn, service, os.Args[2], os.Args[3:])
+}
+
+func printOpheliaHelp() {
+	fmt.Println("Usage: ophelia-ci <service> <command> [arguments]")
+	fmt.Println("Services:")
+	fmt.Println("	repo	Repository service")
+	fmt.Println("	user	User service")
+	fmt.Println("	auth	Authentication service")
+}
+
+func printHelp(service string) {
+	switch service {
+	case "repo":
+		printRepoHelp()
+	case "user":
+		printUserHelp()
+	case "auth":
+		printAuthHelp()
+	default:
+		printOpheliaHelp()
+	}
+}
+
+func handleCommands(ctx context.Context, conn *grpc.ClientConn, service, command string, args []string) {
 	repoClient := pb.NewRepositoryServiceClient(conn)
 	userClient := pb.NewUserServiceClient(conn)
 	authClient := pb.NewAuthServiceClient(conn)
 	signalClient := pb.NewSignalsClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-
-	if len(os.Args) < 2 {
-		fmt.Println("Missing arguments")
-		fmt.Println("Usage: ophelia-ci <service>")
-		fmt.Println("Services: repo, user, auth")
-		os.Exit(1)
-	}
-
-	service := os.Args[1]
-	command := os.Args[2]
-	args := os.Args[3:]
-
 	switch service {
+	case "--help":
+		printOpheliaHelp()
+	case "help":
+		printHelp(command)
 	case "repo":
 		handleRepoCommands(ctx, repoClient, command, args)
 	case "user":
@@ -66,12 +96,13 @@ func main() {
 	}
 }
 
+
 // ensureArgsLength checks if the provided arguments slice contains at least
 // the specified number of elements. If not, it prints the provided message
 // and exits the program with a non-zero status code.
 func ensureArgsLength(args []string, length int, message string) {
 	if len(args) < length {
-		fmt.Println(message)
+		fmt.Println(message + "\n")
 		os.Exit(1)
 	}
 }

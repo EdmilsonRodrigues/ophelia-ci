@@ -15,7 +15,7 @@ if [ ! -f /etc/ophelia-ci/client-config.toml ]; then
     mkdir -p /etc/ophelia-ci
     cat <<EOF > /etc/ophelia-ci/client-config.toml
 [client]
-server = localhost:50051
+server = "localhost:50051"
 
 [ssl]
 # key_file = "/etc/ssl/private/ophelia-ci-client.key"  # If ssl required, put the path here
