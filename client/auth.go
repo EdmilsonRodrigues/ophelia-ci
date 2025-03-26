@@ -91,34 +91,34 @@ func login(ctx context.Context, client pb.AuthServiceClient, username, privateKe
 
 	privateKeyBytes, err := os.ReadFile(privateKey)
 	if err != nil {
-		return "", fmt.Errorf("failed to read private key: %v", err)
+		return "", fmt.Errorf("failed to read private key: %w", err)
 	}
 
 	privateKeyObj, err := ssh.ParsePrivateKey(privateKeyBytes)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse private key: %v", err)
+		return "", fmt.Errorf("failed to parse private key: %w", err)
 	}
 
 	challengeResponse, err := client.AuthenticationChallenge(ctx, &pb.AuthenticationChallengeRequest{Username: username})
 	if err != nil {
-		return "", fmt.Errorf("failed to get authentication challenge: %v", err)
+		return "", fmt.Errorf("failed to get authentication challenge: %w", err)
 	}
 
 	challengeBytes, err := base64.StdEncoding.DecodeString(challengeResponse.Challenge)
 	if err != nil {
-		return "", fmt.Errorf("failed to decode challenge: %v", err)
+		return "", fmt.Errorf("failed to decode challenge: %w", err)
 	}
 
 	h := sha256.Sum256(challengeBytes)
 	signature, err := privateKeyObj.Sign(rand.Reader, h[:])
 	if err != nil {
-		return "", fmt.Errorf("failed to sign challenge: %v", err)
+		return "", fmt.Errorf("failed to sign challenge: %w", err)
 	}
 	signatureBase64 := base64.StdEncoding.EncodeToString(signature.Blob)
 
 	authResponse, err := client.Authentication(ctx, &pb.AuthenticationRequest{Username: username, Challenge: signatureBase64})
 	if err != nil {
-		return "", fmt.Errorf("authentication failed: %v", err)
+		return "", fmt.Errorf("authentication failed: %w", err)
 	}
 
 	if !authResponse.Authenticated {
@@ -146,7 +146,7 @@ func uniqueKeyLogin(ctx context.Context, client pb.AuthServiceClient, uniqueKey 
 
 	authResponse, err := client.UniqueKeyLogin(ctx, &pb.UniqueKeyLoginRequest{UniqueKey: uniqueKey})
 	if err != nil {
-		return "", fmt.Errorf("unique key login failed: %v", err)
+		return "", fmt.Errorf("unique key login failed: %w", err)
 	}
 
 	if !authResponse.Authenticated {

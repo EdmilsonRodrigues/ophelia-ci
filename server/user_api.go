@@ -16,9 +16,9 @@ import (
 // The response will contain the created user information.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values.
-// - req: The request containing the username and public key.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values.
+//   - req: The request containing the username and public key.
 //
 // Returns:
 // - *pb.UserResponse: The response containing the created user information.
@@ -42,9 +42,9 @@ func (s *server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 // The response will contain the user information.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values.
-// - req: The request containing the user ID, username and public key.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values.
+//   - req: The request containing the user ID, username and public key.
 //
 // Returns:
 // - *pb.UserResponse: The response containing the updated user information.
@@ -65,9 +65,9 @@ func (s *server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 // The response will contain a list of users.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values.
-// - req: An empty request message as defined in the protobuf service definition.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values.
+//   - req: An empty request message as defined in the protobuf service definition.
 //
 // Returns:
 // - *pb.ListUserResponse: The response containing the list of users.

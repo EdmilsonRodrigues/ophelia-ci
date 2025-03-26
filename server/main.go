@@ -21,6 +21,7 @@ type server struct {
 	pb.UnimplementedUserServiceServer
 	pb.UnimplementedAuthServiceServer
 	pb.UnimplementedHealthServiceServer
+	pb.UnimplementedSignalsServer
 
 	userStore        store.UserStore
 	repositorieStore store.RepositoryStore

@@ -161,6 +161,14 @@ func DeleteUser(ctx context.Context, client pb.UserServiceClient, id string) {
 	fmt.Printf("User with ID: %s successfully deleted\n\n", id)
 }
 
+// readPublicKey reads the content of a public key file and returns it as a string.
+//
+// Parameters:
+// - path: The path to the public key file.
+//
+// Returns:
+// - string: The content of the public key file as a string.
+// - error: An error if the file cannot be read.
 func readPublicKey(path string) (string, error) {
 	publicKeyBytes, err := os.ReadFile(path)
 	if err != nil {

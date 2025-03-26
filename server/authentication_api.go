@@ -18,18 +18,18 @@ import (
 )
 
 var (
-	jwtSecret = getSecret()
-	uniqueKey = randomKey()
+	jwtSecret             = getSecret()
+	uniqueKey             = randomKey()
 	noAuthNeededFunctions = map[string]bool{
 		"/user.AuthService/AuthenticationChallenge": true,
-		"/user.AuthService/Authentication": true,
-		"/user.AuthService/UniqueKeyLogin": true,
-		"/health.HealthService/Health": true,
+		"/user.AuthService/Authentication":          true,
+		"/user.AuthService/UniqueKeyLogin":          true,
+		"/health.HealthService/Health":              true,
 	}
 )
+
 const (
 	uniqueKeyExpirationDays = 1
-	
 )
 
 // AuthInterceptor is a gRPC interceptor that verifies the JWT token sent
@@ -86,9 +86,9 @@ func randomKey() string {
 // challenge can be used by the client to prove knowledge of a private key.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values.
-// - req: The request containing the username for which the challenge is to be generated.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values.
+//   - req: The request containing the username for which the challenge is to be generated.
 //
 // Returns:
 // - *pb.AuthenticationChallengeResponse: The response containing the generated challenge.
@@ -110,13 +110,13 @@ func (s *server) AuthenticationChallenge(ctx context.Context, req *pb.Authentica
 // if the authentication is successful.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values.
-// - req: The request containing the username and challenge response.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values.
+//   - req: The request containing the username and challenge response.
 //
 // Returns:
-// - *pb.AuthenticationResponse: The response containing the generated JWT token
-//   if the authentication is successful, or an error if the authentication fails.
+//   - *pb.AuthenticationResponse: The response containing the generated JWT token
+//     if the authentication is successful, or an error if the authentication fails.
 func (s *server) Authentication(ctx context.Context, req *pb.AuthenticationRequest) (response *pb.AuthenticationResponse, err error) {
 	config := LoadConfig()
 	log.Printf("Authentication with request: %v", req)
@@ -166,18 +166,18 @@ func (s *server) Authentication(ctx context.Context, req *pb.AuthenticationReque
 	return &pb.AuthenticationResponse{Authenticated: true, Token: token}, nil
 }
 
-// UniqueKeyLogin logs in a user using the unique key thst is generated when the server is started, 
+// UniqueKeyLogin logs in a user using the unique key thst is generated when the server is started,
 // and returns a JWT token if the login is successful.
 // This is used for the initial login when the server is started.
 //
 // Parameters:
-// - ctx: The context for the request, which carries deadlines, cancellation signals,
-//   and other request-scoped values.
-// - req: The request containing the unique key.
+//   - ctx: The context for the request, which carries deadlines, cancellation signals,
+//     and other request-scoped values.
+//   - req: The request containing the unique key.
 //
 // Returns:
-// - *pb.AuthenticationResponse: The response containing the generated JWT token
-//   if the login is successful, or an error if the login fails.
+//   - *pb.AuthenticationResponse: The response containing the generated JWT token
+//     if the login is successful, or an error if the login fails.
 func (s *server) UniqueKeyLogin(ctx context.Context, req *pb.UniqueKeyLoginRequest) (*pb.AuthenticationResponse, error) {
 	log.Printf("UniqueKeyLogin with request: %v", req)
 	if uniqueKey != "" && req.UniqueKey == uniqueKey {

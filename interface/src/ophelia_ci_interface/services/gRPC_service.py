@@ -3,7 +3,7 @@ import hashlib
 import io
 import logging
 
-import grpc  # type: ignore[import-untyped]  # type: ignore[import-untyped]  # type: ignore[import-untyped]  # type: ignore[import-untyped]
+import grpc  # type: ignore[import-untyped]  # type: ignore[import-untyped]  # type: ignore[import-untyped]  # type: ignore[import-untyped]  # type: ignore[import-untyped]  # type: ignore[import-untyped]  # type: ignore[import-untyped]
 import ophelia_ci_interface.services.common_pb2 as common_pb2
 import ophelia_ci_interface.services.health_pb2_grpc as health_pb2_grpc
 import ophelia_ci_interface.services.repository_pb2 as repository_pb2

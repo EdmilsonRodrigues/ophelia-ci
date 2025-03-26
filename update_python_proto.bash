@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROTOS=("common.proto" "repository.proto" "user.proto" "health.proto")
+PROTOS=("common.proto" "repository.proto" "user.proto" "health.proto" "signal.proto")
 
 source .venv/bin/activate
 cd interface/src/ophelia_ci_interface/services

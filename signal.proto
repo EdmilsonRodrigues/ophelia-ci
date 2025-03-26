@@ -1,0 +1,17 @@
+syntax = "proto3";
+package signal;
+
+import "common.proto";
+
+option go_package = "github.com/EdmilsonRodrigues/ophelia-ci";
+
+service Signals {
+    rpc CommitSignal (CommitRequest) returns (common.Empty);
+}
+
+message CommitRequest {
+    string commit_hash = 1;
+    string branch = 2;
+    string repository = 3;
+    string tag = 4;
+}

@@ -2,7 +2,9 @@
 
 while read oldrev newrev ref; do
     branch=$(git rev-parse --symbolic --abbrev-ref $ref)
+    repo_name=$(basename $(git rev-parse --show-toplevel))
+    tag_name=$(git describe --tags --exact-match $newrev)
+    commit_hash=$newrev
 
-    echo "Received push!"
-    # I will add this soon
+    /usr/bin/ophelia-ci signal commit --hash $commit_hash --branch $branch --tag $tag_name --repo $repo_name
 done
