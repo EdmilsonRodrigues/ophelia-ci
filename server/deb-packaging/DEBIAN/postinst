@@ -2,6 +2,7 @@
 set -e
 
 LOG_FILE="/var/log/ophelia-ci-server-install.log"
+OPHELIA_USER="ophelia"
 
 log() {
     echo "$(date) - $1" >> $LOG_FILE
@@ -26,24 +27,28 @@ expiration_time = 30  # in days
 EOF
 fi
 
-if ! id -g ophelia > /dev/null 2> /dev/null; then
-    log "Creating ophelia group"
-    addgroup --system ophelia
+if ! id -g $OPHELIA_USER > /dev/null 2> /dev/null; then
+    log "Creating $OPHELIA_USER group"
+    addgroup --system $OPHELIA_USER
 fi
 
-if ! id -u ophelia > /dev/null 2> /dev/null; then
-    log "Creating ophelia user"
-    adduser --system --ingroup ophelia --home /var/lib/ophelia ophelia
+if ! id -u $OPHELIA_USER > /dev/null 2> /dev/null; then
+    log "Creating $OPHELIA_USER user"
+    adduser --system --ingroup $OPHELIA_USER --home /var/lib/ophelia --shell /bin/bash $OPHELIA_USER
 fi
 
 if [ ! -d /var/lib/ophelia ]; then
-    log "Creating ophelia directory"
+    log "Creating $OPHELIA_USER directory"
     mkdir -p /var/lib/ophelia
 fi
 
-log "Changing ownership of ophelia directory"
-chown ophelia:ophelia /var/lib/ophelia
+log "Changing ownership of $OPHELIA_USER directory"
+chown ${OPHELIA_USER}:${OPHELIA_USER} /var/lib/ophelia
 chmod 740 /var/lib/ophelia
+
+log "Configuring Git for $OPHELIA_USER"
+su - "$OPHELIA_USER" -c "git config --global user.email 'ophelia@your-domain.com'"
+su - "$OPHELIA_USER" -c "git config --global user.name 'Ophelia CI Server'"
 
 log "Changing ownership of server config"
 chown root:ophelia /etc/ophelia-ci/server-config.toml
