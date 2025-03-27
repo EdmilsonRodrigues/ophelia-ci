@@ -1,0 +1,33 @@
+name: ophelia-ci-server
+
+type: charm
+
+base: ubuntu@24.04
+
+platforms:
+  amd64:
+
+summary: An Open Source Git server.
+
+description: |
+  A git server that anyone can install in their own
+  infrastructure and use to mange their projects. It is written in go
+  and is designed to be easy to install and use. Also it uses gRPC for
+  communication between the client and the server.
+
+extensions:
+  - go-framework
+
+provides:
+  ophelia-interface:
+    interface: ophelia-interface
+
+storage:
+  git-repos:
+    type: filesystem
+    description: Persistent storage for Git repositories.
+    mount: /var/lib/ophelia/
+    # Optional:
+    # minimum-size: 10G
+    # properties:
+    #   - durable

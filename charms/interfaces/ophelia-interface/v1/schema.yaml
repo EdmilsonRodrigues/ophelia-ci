@@ -1,0 +1,31 @@
+name: ophelia-interface
+version: 1
+description: Interface for communication between ophelia-ci interface and server.
+
+provides:
+  - data:
+    type: object
+    description: Data provided by the server.
+    properties:
+      server_address:
+        type: string
+        description: The network address (host:port) of the ophelia-ci-server's gRPC endpoint.
+      server_version:
+        type: string
+        description: The version of the ophelia-ci-server.
+    required:
+      - server_address
+      - server_version
+
+requires:
+  - data:
+    type: object
+    description: Data provided by the interface.
+    properties:
+      client_address:
+        type: string
+        description: The network address (host:port) where the ophelia-ci-interface is accessible (optional).
+      client_version:
+        type: string
+        description: The version of the ophelia-ci-interface (optional).
+    required: []
