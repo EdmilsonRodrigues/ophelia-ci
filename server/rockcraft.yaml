@@ -11,14 +11,21 @@ platforms:
 
 environment:
   OPHELIA_CI_FROM_IMAGE: "true"
+  APP_OPHELIA_CI_SERVER_HOME_PATH: "/var/lib/ophelia/"
+
+services:
+  ophelia-ci-server:
+    override: replace
+    summary: Ophelia CI Server
+    description: Runs the Ophelia CI server
+    startup: enabled
+    command: sh -c "mkdir -p /var/lib/ophelia && chown root:root /var/lib/ophelia && chmod 755 /var/lib/ophelia && ./ophelia-ci-server"
 
 parts:
-  go-server:
+  ophelia-server:
     plugin: go
     source: "https://github.com/EdmilsonRodrigues/ophelia-ci"
     source-type: git
-    build-snaps:
-      - go/latest/stable
     build-packages:
       - git
     override-build: |
