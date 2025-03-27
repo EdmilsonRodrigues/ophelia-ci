@@ -34,7 +34,7 @@ func main() {
 
 	config := LoadConfig()
 
-	db, err := sql.Open("sqlite3", config.Server.DBPath)
+	db, err := sql.Open("sqlite3", config.Server.HomePath + "/ophelia.db")
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
 	}

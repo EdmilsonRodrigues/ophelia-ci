@@ -12,7 +12,7 @@ type Config struct {
 	Server struct {
 		Port           int    `toml:"port"`
 		Secret         string `toml:"secret"`
-		DBPath         string `toml:"db_path"`
+		HomePath         string `toml:"home_path"`
 		ExpirationTime int    `toml:"expiration_time"`
 	} `toml:"server"`
 	SSL struct {
@@ -27,7 +27,6 @@ var (
 
 const (
 	configPath = "/etc/ophelia-ci/server-config.toml"
-	homePath   = "/var/lib/ophelia"
 )
 
 // LoadConfig reads the server configuration from a TOML file located at
@@ -36,6 +35,10 @@ const (
 // fails, the function panics. It returns the cached configuration.
 func LoadConfig() Config {
 	var err error
+	if pb.CheckRunningFromImage() {
+		configCache = loadConfigFromEnv()
+		return configCache
+	}
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		config := loadConfigFromEnv()
 		if err := pb.SaveConfig(configPath, config); err != nil {
@@ -58,35 +61,35 @@ func LoadConfig() Config {
 // the Config struct. If the environment variables are not set, it falls back
 // to default values.
 func loadConfigFromEnv() (config Config) {
-	port, err := strconv.Atoi(os.Getenv("OPHELIA_CI_SERVER_PORT"))
+	port, err := strconv.Atoi(os.Getenv("APP_OPHELIA_CI_SERVER_PORT"))
 	if err != nil || port <= 0 {
-		log.Printf("OPHELIA_CI_SERVER_PORT is not set or invalid. Using default port 50051.")
+		log.Printf("APP_OPHELIA_CI_SERVER_PORT is not set or invalid. Using default port 50051.")
 		port = 50051
 	}
 	config.Server.Port = port
 
-	secret := os.Getenv("OPHELIA_CI_SERVER_SECRET")
+	secret := os.Getenv("APP_OPHELIA_CI_SERVER_SECRET")
 	if secret == "" {
-		log.Printf("OPHELIA_CI_SERVER_SECRET is not set. Using random secret.")
+		log.Printf("APP_OPHELIA_CI_SERVER_SECRET is not set. Using random secret.")
 		secret = randomKey()
 	}
 	config.Server.Secret = secret
 
-	dbPath := os.Getenv("OPHELIA_CI_SERVER_DB_PATH")
-	if dbPath == "" {
-		dbPath = homePath + "/ophelia.db"
-		log.Printf("OPHELIA_CI_SERVER_DB_PATH is not set. Using default path %s.", dbPath)
+	homePath := os.Getenv("APP_OPHELIA_CI_SERVER_HOME_PATH")
+	if homePath == "" {
+		homePath = "/var/lib/ophelia/"
+		log.Printf("APP_OPHELIA_CI_SERVER_HOME_PATH is not set. Using default path %s.", homePath)
 	}
 
-	config.Server.DBPath = dbPath
-	expirationTime, err := strconv.Atoi(os.Getenv("OPHELIA_CI_SERVER_EXPIRATION_TIME"))
+	config.Server.HomePath = homePath
+	expirationTime, err := strconv.Atoi(os.Getenv("APP_OPHELIA_CI_SERVER_EXPIRATION_TIME"))
 	if err != nil || expirationTime <= 0 {
-		log.Printf("OPHELIA_CI_SERVER_EXPIRATION_TIME is not set or invalid. Using default expiration time 30 days.")
+		log.Printf("APP_OPHELIA_CI_SERVER_EXPIRATION_TIME is not set or invalid. Using default expiration time 30 days.")
 		expirationTime = 30
 	}
 	config.Server.ExpirationTime = expirationTime
 
-	config.SSL.CertFile = os.Getenv("OPHELIA_CI_SERVER_CERT_FILE")
-	config.SSL.KeyFile = os.Getenv("OPHELIA_CI_SERVER_KEY_FILE")
+	config.SSL.CertFile = os.Getenv("APP_OPHELIA_CI_SERVER_CERT_FILE")
+	config.SSL.KeyFile = os.Getenv("APP_OPHELIA_CI_SERVER_KEY_FILE")
 	return
 }

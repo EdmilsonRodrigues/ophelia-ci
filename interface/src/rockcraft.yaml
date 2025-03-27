@@ -2,7 +2,7 @@ name: ophelia-ci-interface
 base: bare
 build-base: ubuntu@24.04
 version: '1.0.2'
-summary: A interface for ophelia-ci-server
+summary: A interface for ophelia-ci-server.
 description: |
     This snap is the interface for the ophelia-ci-server. 
     If you are running the server and want a friendly graphic user interface, 
@@ -12,7 +12,7 @@ platforms:
     amd64:
 
 environment:
-    OPHELIA_CI_UNPACKED: "True"
+    APP_OPHELIA_CI_UNPACKED: "True"
 
 extensions:
 - fastapi-framework

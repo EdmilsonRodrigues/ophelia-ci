@@ -10,7 +10,7 @@ GITIGNORE_OPTIONS = ['None', 'python', 'go']
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file='.env', env_prefix='OPHELIA_CI_', extra='ignore'
+        env_file='.env', env_prefix='APP_OPHELIA_CI_', extra='ignore'
     )
     PORT: int = 8008
     GRPC_SERVER: str = 'localhost:50051'

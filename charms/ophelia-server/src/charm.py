@@ -10,13 +10,15 @@ import typing
 
 import ops
 import paas_charm.go
-from ops.model import ActiveStatus
+from ops.model import ActiveStatus, WaitingStatus
 
 logger = logging.getLogger(__name__)
 
 
 class OpheliaCiServerCharm(paas_charm.go.Charm):
     """Go Charm service."""
+
+    _storage_attached = False
 
     def __init__(self, *args: typing.Any) -> None:
         """Initialize the instance.
@@ -31,6 +33,8 @@ class OpheliaCiServerCharm(paas_charm.go.Charm):
             self.on.ophelia_interface_relation_joined, self._on_ophelia_interface_joined
         )
 
+        self.unit.status = WaitingStatus("Waiting for git-repos storage")
+
     def _on_git_repos_attached(self, event: ops.framework.EventBase):
         """Handle the git-repos storage being attached."""
         if not event.storage:
@@ -39,16 +43,25 @@ class OpheliaCiServerCharm(paas_charm.go.Charm):
 
         mount_point = event.storage.location
         logger.info(f"Git repos storage attached at: {mount_point}")
-        self.unit.status = ActiveStatus(f"Git repos storage attached at {mount_point}")
         os.environ["APP_OPHELIA_CI_SERVER_HOME_PATH"] = mount_point
+        self._storage_attached = True
+        self._update_status_and_publish()
 
     def _on_ophelia_interface_relation_joined(self, event: ops.framework.EventBase):
         """Handle the ophelia-interface relation being established."""
-        self._publish_server_info(event.relation)
+        self._update_status_and_publish(event.relation)
 
-    def _publish_server_info(self, relation: ops.Relation):
-        """Publish the server's address and version on the relation."""
-        server_address = f"{self.unit.name.split('/')[0]}:50051"  # Example: unit-id:port
+    def _update_status_and_publish(self, relation: typing.Optional[ops.Relation] = None):
+        """Update the unit status and publish server info if storage is attached."""
+        if not self._storage_attached:
+            self.unit.status = WaitingStatus("Waiting for git-repos storage")
+            return
+
+        if not relation:
+            self.unit.status = ActiveStatus("Server ready")
+            return
+
+        server_address = f"{self.unit.name.split('/')[0]}:50051"
         server_version = "1"
 
         relation.data[self.unit]["server_address"] = server_address

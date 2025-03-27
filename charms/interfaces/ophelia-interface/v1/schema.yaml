@@ -24,8 +24,10 @@ requires:
     properties:
       client_address:
         type: string
-        description: The network address (host:port) where the ophelia-ci-interface is accessible (optional).
+        description: The network address (host:port) where the ophelia-ci-interface is accessible (e.g., `unit-id:8008`).
       client_version:
         type: string
-        description: The version of the ophelia-ci-interface (optional).
-    required: []
+        description: The version of the ophelia-ci-interface (e.g., `1.0.2`).
+    required:
+      - client_address
+      - client_version

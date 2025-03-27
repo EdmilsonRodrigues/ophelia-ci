@@ -17,7 +17,7 @@ if [ ! -f /etc/ophelia-ci/server-config.toml ]; then
     cat <<EOF > /etc/ophelia-ci/server-config.toml
 [server]
 port = 50051
-db_path = "/var/lib/ophelia/ophelia.db"
+home_path = "/var/lib/ophelia/"
 secret = "$(head -c 32 /dev/urandom | base64)"
 expiration_time = 30  # in days
 

@@ -1,0 +1,33 @@
+name: ophelia-ci-server
+base: ubuntu@24.04
+version: "1.0.0"
+summary: An open and free CI server.
+description: |
+  A CI server that anyone can install in a VM and use to mange 
+  their projects with CI workflows.
+
+platforms:
+  amd64:
+
+environment:
+  OPHELIA_CI_FROM_IMAGE: "true"
+
+parts:
+  go-server:
+    plugin: go
+    source: "https://github.com/EdmilsonRodrigues/ophelia-ci"
+    source-type: git
+    build-snaps:
+      - go/latest/stable
+    build-packages:
+      - git
+    override-build: |
+      pwd
+      ls -R
+      go mod download
+      go build -o ophelia-ci-server ./server
+      chmod +x ophelia-ci-server
+      mv ophelia-ci-server /root/stage/ophelia-ci-server
+    prime:
+      - ophelia-ci-server
+      - +lib*

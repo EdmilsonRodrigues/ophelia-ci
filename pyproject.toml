@@ -1,7 +1,7 @@
 [project]
 name = "ophelia-ci-interface"
-version = "1.0.0"
-description = "This is a Python project to create a web page interface for an Ophelia CI server."
+version = "1.0.2"
+description = "A interface for ophelia-ci-server."
 readme = "README.md"
 requires-python = ">=3.12, <3.13"
 dependencies = [
@@ -13,8 +13,6 @@ dependencies = [
     "protobuf>=5.29.3",
     "pydantic-settings>=2.8.1",
     "pydantic[email]>=2.10.6",
-    "types-paramiko>=3.5.0.20240928",
-    "types-protobuf>=5.29.1.20250315",
     "uvicorn[standard]>=0.34.0",
 ]
 
@@ -28,6 +26,8 @@ dev = [
     "briefcase>=0.3.22",
     "mypy>=1.15.0",
     "mypy-protobuf>=3.6.0",
+    "types-paramiko>=3.5.0.20240928",
+    "types-protobuf>=5.29.1.20250315",
     "ruff>=0.11.0",
 ]
 
@@ -48,7 +48,7 @@ preview = true
 select = ["I", "UP", "F", "E", "W"]
 
 [tool.mypy]
-files = ["src", "tests"]
+files = ["src/ophelia_ci_interface", "tests"]
 exclude = [
     '__main__\.py',
 ]

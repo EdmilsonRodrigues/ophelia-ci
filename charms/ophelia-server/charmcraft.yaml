@@ -22,12 +22,4 @@ provides:
   ophelia-interface:
     interface: ophelia-interface
 
-storage:
-  git-repos:
-    type: filesystem
-    description: Persistent storage for Git repositories.
-    mount: /var/lib/ophelia/
-    # Optional:
-    # minimum-size: 10G
-    # properties:
-    #   - durable
+

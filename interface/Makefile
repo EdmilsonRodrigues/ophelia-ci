@@ -11,7 +11,7 @@ mypy:
 
 run:
 	cd src && \
-	OPHELIA_CI_UNPACKED=True uvicorn ophelia_ci_interface.main:app --reload
+	APP_OPHELIA_CI_UNPACKED=True uvicorn ophelia_ci_interface.main:app --reload
 
 docker:
 	docker build -t edmilsonrodrigues/ophelia-ci-interface:$(TAG) -f Dockerfile ..

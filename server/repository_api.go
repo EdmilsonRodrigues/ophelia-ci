@@ -145,5 +145,5 @@ func (s *server) DeleteRepository(ctx context.Context, req *pb.DeleteRepositoryR
 // Returns:
 // - string: The file path for the Git repository, appended with ".git".
 func getRepoPath(repoName string) string {
-	return homePath + "/" + repoName + ".git"
+	return LoadConfig().Server.HomePath + "/" + repoName + ".git"
 }
