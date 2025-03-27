@@ -1,0 +1,26 @@
+name: ophelia-ci-interface
+base: core24
+version: 1.0.2
+summary: A interface for ophelia-ci-server
+description: |
+  This snap is the interface for the ophelia-ci-server.
+  If you are running the server and want a friendly graphic user interface,
+  install and enable this snap. It will run on port 8008.
+confinement: strict
+
+parts:
+  ophelia-ci-interface:
+    plugin: python
+    source: .
+
+apps:
+  ophelia-ci-interface:
+    command: bin/ophelia-ci-interface.py
+    daemon: simple
+    environment:
+      PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$SNAP/lib/python3.12/site-packages
+      OPHELIA_CI_UNPACKED: "True"
+    plugs:
+      - network
+      - network-bind
+

@@ -3,7 +3,8 @@ import uvicorn
 from ophelia_ci_interface.config import Settings
 from ophelia_ci_interface.main import app
 
-if __name__ == '__main__':
+
+def main():
     settings = Settings()
     optional_args = {
         'ssl_keyfile': settings.SSL_KEYFILE,
@@ -14,3 +15,7 @@ if __name__ == '__main__':
     uvicorn.run(
         app, loop='uvloop', host='0.0.0.0', port=settings.PORT, **optional_args
     )
+
+
+if __name__ == '__main__':
+    main()

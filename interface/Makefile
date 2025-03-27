@@ -16,6 +16,19 @@ run:
 docker:
 	docker build -t edmilsonrodrigues/ophelia-ci-interface:$(TAG) -f Dockerfile ..
 
+snap:
+	./create_requirements.bash
+	./update_versions.bash
+	cd src && \
+	snapcraft
+
+rock:
+	make mypy
+	./create_requirements.bash
+	./update_versions.bash
+	cd src && \
+	ROCKCRAFT_ENABLE_EXPERIMENTAL_EXTENSIONS=true rockcraft pack
+	mv src/*.rock ../dist
 
 build:
 	./fix_pyproject.bash

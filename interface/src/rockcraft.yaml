@@ -1,0 +1,34 @@
+name: ophelia-ci-interface
+base: bare
+build-base: ubuntu@24.04
+version: '1.0.2'
+summary: A interface for ophelia-ci-server
+description: |
+    This snap is the interface for the ophelia-ci-server. 
+    If you are running the server and want a friendly graphic user interface, 
+    install and enable this snap. It will run on port 8008.
+
+platforms:
+    amd64:
+
+environment:
+    OPHELIA_CI_UNPACKED: "True"
+
+extensions:
+- fastapi-framework
+
+parts:
+  libstdc++6-slice:
+    plugin: nil
+    stage-packages:
+      - libstdc++6
+
+  fastapi-framework/install-app:
+    prime:
+      - app/ophelia_ci_interface/main.py
+      - app/ophelia_ci_interface/config.py
+      - app/ophelia_ci_interface/models/
+      - app/ophelia_ci_interface/resources/
+      - app/ophelia_ci_interface/routers/
+      - app/ophelia_ci_interface/services/
+
