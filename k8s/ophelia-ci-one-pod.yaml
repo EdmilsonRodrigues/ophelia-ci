@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ophelia-ci-one-pod
+  labels:
+    app: ophelia-ci-one-pod
+spec:
+  containers:
+  - name: ophelia-ci-interface
+    image: edmilsonrodrigues/ophelia-ci-interface:1.0.0
+    ports:
+    - containerPort: 8000
+    env:
+    - name: APP_OPHELIA_CI_UNPACKED
+      value: "True"
+    - name: APP_OPHELIA_CI_GRPC_SERVER
+      value: "localhost:50051"
+
+  - name: ophelia-ci-server
+    image: edmilsonrodrigues/ophelia-ci-server:1.0.0
+    ports:
+    - containerPort: 50051
